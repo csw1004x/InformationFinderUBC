@@ -1,0 +1,16 @@
+{
+  "title": "switch place",
+  "input": {
+    "OPTIONS": {
+      "COLUMNS": [
+        "sections_uuid"
+      ]
+    },
+    "WHERE": {
+      "IS": {
+        "sections_uuid": "46810"
+      }
+    }
+  },
+  "errorExpected": false,
+  "expected": [{"sections_uuid":"46810"}]}

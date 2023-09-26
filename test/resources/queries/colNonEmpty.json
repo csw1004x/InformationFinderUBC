@@ -1,0 +1,16 @@
+{
+  "title": "COLUMNS must be a non-empty array",
+  "input": {
+    "WHERE": {
+      "LT": {
+        "sections_avg": 30
+      }
+    },
+    "OPTIONS": {
+      "COLUMNS": [
+      ]
+    }
+  },
+  "errorExpected": true,
+  "expected": "InsightError"
+}

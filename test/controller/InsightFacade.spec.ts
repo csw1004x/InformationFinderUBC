@@ -24,6 +24,7 @@ describe("InsightFacade", function () {
 	// variable names to be used in tests
 	let sections1: string;
 	let sections2: string;
+	let sections3: string;
 	let sectionsNotCourse: string;
 
 	let facade: InsightFacade;
@@ -180,6 +181,148 @@ describe("InsightFacade", function () {
 			const result = facade.addDataset(id, sections1, InsightDatasetKind.Sections);
 			await expect(result).to.eventually.be.rejectedWith(InsightError);
 		});
+
+		it ("should reject with not a section with no audit", async function () {
+			sections3 = getContentFromArchives("noAudit.zip");
+
+			try {
+				const result = await facade.addDataset("ubc", sections3, InsightDatasetKind.Sections);
+				expect.fail("Should have rejected!");
+			} catch (err) {
+				expect(err).to.be.instanceof(InsightError);
+			}
+
+		});
+
+		it ("should reject with not a section with no avg", async function () {
+			sections3 = getContentFromArchives("noAvg.zip");
+
+			try {
+				const result = await facade.addDataset("ubc", sections3, InsightDatasetKind.Sections);
+				expect.fail("Should have rejected!");
+			} catch (err) {
+				expect(err).to.be.instanceof(InsightError);
+			}
+		});
+
+		it ("should reject with not a section with no Course", async function () {
+			sections3 = getContentFromArchives("noCourse.zip");
+
+			try {
+				const result = await facade.addDataset("ubc", sections3, InsightDatasetKind.Sections);
+				expect.fail("Should have rejected!");
+			} catch (err) {
+				expect(err).to.be.instanceof(InsightError);
+			}
+		});
+
+		it ("should reject with not a section with no fail", async function () {
+			sections3 = getContentFromArchives("noFail.zip");
+
+			try {
+				const result = await facade.addDataset("ubc", sections3, InsightDatasetKind.Sections);
+				expect.fail("Should have rejected!");
+			} catch (err) {
+				expect(err).to.be.instanceof(InsightError);
+			}
+		});
+
+		it ("should reject with not a section with no ID", async function () {
+			sections3 = getContentFromArchives("noID.zip");
+
+			try {
+				const result = await facade.addDataset("ubc", sections3, InsightDatasetKind.Sections);
+				expect.fail("Should have rejected!");
+			} catch (err) {
+				expect(err).to.be.instanceof(InsightError);
+			}
+		});
+
+		it ("should reject with not a section with no Pass", async function () {
+			sections3 = getContentFromArchives("noPass.zip");
+
+			try {
+				const result = await facade.addDataset("ubc", sections3, InsightDatasetKind.Sections);
+				expect.fail("Should have rejected!");
+			} catch (err) {
+				expect(err).to.be.instanceof(InsightError);
+			}
+		});
+
+		it ("should reject with not a section with no Sub", async function () {
+			sections3 = getContentFromArchives("noSub.zip");
+
+			try {
+				const result = await facade.addDataset("ubc", sections3, InsightDatasetKind.Sections);
+				expect.fail("Should have rejected!");
+			} catch (err) {
+				expect(err).to.be.instanceof(InsightError);
+			}
+		});
+
+		it ("should reject with not a section with no Title", async function () {
+			let sections4 = getContentFromArchives("noTitle.zip");
+
+			try {
+				const result = await facade.addDataset("ubc", sections3, InsightDatasetKind.Sections);
+				expect.fail("Should have rejected!");
+			} catch (err) {
+				expect(err).to.be.instanceof(InsightError);
+			}
+		});
+
+		it ("should reject with not a section with no Year", async function () {
+			sections3 = getContentFromArchives("noYear.zip");
+
+			try {
+				const result = await facade.addDataset("ubc", sections3, InsightDatasetKind.Sections);
+				expect.fail("Should have rejected!");
+			} catch (err) {
+				expect(err).to.be.instanceof(InsightError);
+			}
+		});
+
+		it ("should reject with not a section with no Prof", async function () {
+			sections3 = getContentFromArchives("noProf.zip");
+
+			try {
+				const result = await facade.addDataset("ubc", sections3, InsightDatasetKind.Sections);
+				expect.fail("Should have rejected!");
+			} catch (err) {
+				expect(err).to.be.instanceof(InsightError);
+			}
+		});
+
+		it ("should reject with a section with wrong kind", async function () {
+			try {
+				const result = await facade.addDataset("ubc", sections, InsightDatasetKind.Rooms);
+				expect.fail("Should have rejected!");
+			} catch (err) {
+				expect(err).to.be.instanceof(InsightError);
+			}
+		});
+
+		it ("should reject with empty zip file", async function () {
+			sections2 = getContentFromArchives("empty.zip");
+
+			try {
+				const result = await facade.addDataset("ubc", sections2, InsightDatasetKind.Sections);
+				expect.fail("Should have rejected!");
+			} catch (err) {
+				expect(err).to.be.instanceof(InsightError);
+			}
+		});
+
+		it ("should accept valid caps numbers and symbols", async function () {
+			try{
+				const result = await facade.addDataset("UBC123!@", sections, InsightDatasetKind.Sections);
+
+				expect(result).to.deep.equal(["UBC123!@"]);
+			} catch (err){
+				expect.fail("Should not have rejected!");
+			}
+		});
+
 		it("Fulfill: Remove dataset successfully once", async function () {
 			const id = "section1";
 			await facade.addDataset(id, sections1, InsightDatasetKind.Sections);
@@ -202,6 +345,17 @@ describe("InsightFacade", function () {
 
 			let list = await facade.listDatasets();
 			expect(list.length).to.equal(0);
+		});
+
+		it ("should successfully remove id caps num symbols", async function () {
+			try {
+				await facade.addDataset("UBC123!@", sections, InsightDatasetKind.Sections);
+
+				const result = await facade.removeDataset("UBC123!@");
+				expect(result).to.deep.equal("UBC123!@");
+			} catch (err){
+				expect.fail("Should not have rejected!");
+			}
 		});
 
 		it("Reject: Remove non-existent id", async function () {

@@ -1,0 +1,22 @@
+{
+  "title": "more than one key in order",
+  "input": {
+    "WHERE": {
+      "GT": {
+        "sections_avg": 97
+      }
+    },
+    "OPTIONS": {
+      "COLUMNS": [
+        "sections_dept",
+        "sections_avg"
+      ],
+      "ORDER": [
+        "sections_avg",
+        "sections_id"
+      ]
+    }
+  },
+  "errorExpected": true,
+  "expected": "InsightError"
+}

@@ -1,0 +1,20 @@
+{
+  "title": "scmp is: uuid",
+  "input": {
+    "WHERE": {
+      "IS": {
+        "sections_uuid": "23074"
+      }
+    },
+    "OPTIONS": {
+      "COLUMNS": [
+        "sections_dept",
+        "sections_id",
+        "sections_uuid"
+      ],
+      "ORDER": "sections_uuid"
+    }
+  },
+  "errorExpected": false,
+  "expected": [{"sections_dept":"astr","sections_id":"205","sections_uuid":"23074"}]}
+

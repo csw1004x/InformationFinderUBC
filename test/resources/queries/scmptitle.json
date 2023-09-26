@@ -1,0 +1,20 @@
+{
+  "title": "scmp is: title",
+  "input": {
+    "WHERE": {
+      "IS": {
+        "sections_title": "strs & stllr pop"
+      }
+    },
+    "OPTIONS": {
+      "COLUMNS": [
+        "sections_dept",
+        "sections_id",
+        "sections_title",
+        "sections_uuid"
+      ],
+      "ORDER": "sections_uuid"
+    }
+  },
+  "errorExpected": false,
+  "expected": [{"sections_dept":"astr","sections_id":"205","sections_title":"strs & stllr pop","sections_uuid":"23074"},{"sections_dept":"astr","sections_id":"205","sections_title":"strs & stllr pop","sections_uuid":"23075"},{"sections_dept":"astr","sections_id":"205","sections_title":"strs & stllr pop","sections_uuid":"30095"},{"sections_dept":"astr","sections_id":"205","sections_title":"strs & stllr pop","sections_uuid":"30096"},{"sections_dept":"astr","sections_id":"205","sections_title":"strs & stllr pop","sections_uuid":"76035"},{"sections_dept":"astr","sections_id":"205","sections_title":"strs & stllr pop","sections_uuid":"76036"}]}

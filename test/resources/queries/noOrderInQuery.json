@@ -1,0 +1,20 @@
+{
+  "title": "no order",
+  "input": {
+    "WHERE": {
+      "NOT": {
+        "GT": {
+          "sections_avg": 0
+        }
+      }
+    },
+    "OPTIONS": {
+      "COLUMNS": [
+        "sections_dept",
+        "sections_avg",
+        "sections_uuid"
+      ]
+    }
+  },
+  "errorExpected": false,
+  "expected": [{"sections_dept":"frst","sections_avg":0,"sections_uuid":"89536"},{"sections_dept":"lfs","sections_avg":0,"sections_uuid":"56402"},{"sections_dept":"lfs","sections_avg":0,"sections_uuid":"56403"}]}
