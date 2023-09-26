@@ -1,0 +1,18 @@
+{
+  "title": "fails underscore for queries",
+  "input": {
+    "WHERE": {
+      "GT": {
+        "__avg": 97
+      }
+    },
+    "OPTIONS": {
+      "COLUMNS": [
+        "__dept",
+        "__avg"
+      ]
+    }
+  },
+  "errorExpected": true,
+  "expected": "InsightError"
+}

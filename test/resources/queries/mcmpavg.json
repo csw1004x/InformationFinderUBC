@@ -1,0 +1,19 @@
+{
+  "title": "test avg",
+  "input": {
+    "WHERE": {
+      "EQ": {
+        "sections_avg": 97
+      }
+    },
+    "OPTIONS": {
+      "COLUMNS": [
+        "sections_dept",
+        "sections_avg",
+        "sections_uuid"
+      ],
+      "ORDER": "sections_uuid"
+    }
+  },
+  "errorExpected": false,
+  "expected": [{"sections_dept":"crwr","sections_avg":97,"sections_uuid":"26255"},{"sections_dept":"psyc","sections_avg":97,"sections_uuid":"54846"},{"sections_dept":"epse","sections_avg":97,"sections_uuid":"76310"}]}

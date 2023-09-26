@@ -1,0 +1,20 @@
+{
+  "title": "test pass",
+  "input": {
+    "WHERE": {
+      "EQ": {
+        "sections_pass": 200
+      }
+    },
+    "OPTIONS": {
+      "COLUMNS": [
+        "sections_dept",
+        "sections_avg",
+        "sections_pass",
+        "sections_uuid"
+      ],
+      "ORDER": "sections_uuid"
+    }
+  },
+  "errorExpected": false,
+  "expected": [{"sections_dept":"hist","sections_avg":72.2,"sections_pass":200,"sections_uuid":"18905"},{"sections_dept":"biol","sections_avg":75.35,"sections_pass":200,"sections_uuid":"20615"},{"sections_dept":"econ","sections_avg":76.72,"sections_pass":200,"sections_uuid":"21474"},{"sections_dept":"econ","sections_avg":76.72,"sections_pass":200,"sections_uuid":"21475"},{"sections_dept":"math","sections_avg":67.61,"sections_pass":200,"sections_uuid":"27209"},{"sections_dept":"math","sections_avg":68.73,"sections_pass":200,"sections_uuid":"27307"},{"sections_dept":"biol","sections_avg":72.31,"sections_pass":200,"sections_uuid":"28178"},{"sections_dept":"biol","sections_avg":72.31,"sections_pass":200,"sections_uuid":"28179"},{"sections_dept":"geog","sections_avg":64.83,"sections_pass":200,"sections_uuid":"29047"},{"sections_dept":"apsc","sections_avg":68.62,"sections_pass":200,"sections_uuid":"36585"},{"sections_dept":"civl","sections_avg":66.75,"sections_pass":200,"sections_uuid":"37574"},{"sections_dept":"chem","sections_avg":72.36,"sections_pass":200,"sections_uuid":"42521"},{"sections_dept":"comm","sections_avg":75.78,"sections_pass":200,"sections_uuid":"43900"},{"sections_dept":"math","sections_avg":59.11,"sections_pass":200,"sections_uuid":"5170"},{"sections_dept":"biol","sections_avg":73.95,"sections_pass":200,"sections_uuid":"54058"},{"sections_dept":"biol","sections_avg":73.95,"sections_pass":200,"sections_uuid":"54059"},{"sections_dept":"cpsc","sections_avg":70.66,"sections_pass":200,"sections_uuid":"61142"},{"sections_dept":"geob","sections_avg":65.19,"sections_pass":200,"sections_uuid":"66197"},{"sections_dept":"busi","sections_avg":69.64,"sections_pass":200,"sections_uuid":"66807"},{"sections_dept":"eosc","sections_avg":74.79,"sections_pass":200,"sections_uuid":"68960"},{"sections_dept":"eosc","sections_avg":74.79,"sections_pass":200,"sections_uuid":"68961"},{"sections_dept":"biol","sections_avg":79.12,"sections_pass":200,"sections_uuid":"72069"},{"sections_dept":"comm","sections_avg":68.06,"sections_pass":200,"sections_uuid":"81438"},{"sections_dept":"geog","sections_avg":70.4,"sections_pass":200,"sections_uuid":"82651"},{"sections_dept":"geog","sections_avg":70.4,"sections_pass":200,"sections_uuid":"82652"},{"sections_dept":"phar","sections_avg":88.36,"sections_pass":200,"sections_uuid":"83039"},{"sections_dept":"phar","sections_avg":94.87,"sections_pass":200,"sections_uuid":"83049"},{"sections_dept":"phar","sections_avg":85.66,"sections_pass":200,"sections_uuid":"83103"},{"sections_dept":"comm","sections_avg":72,"sections_pass":200,"sections_uuid":"83645"},{"sections_dept":"comm","sections_avg":75.26,"sections_pass":200,"sections_uuid":"83989"},{"sections_dept":"biol","sections_avg":66.68,"sections_pass":200,"sections_uuid":"88928"},{"sections_dept":"phys","sections_avg":66.15,"sections_pass":200,"sections_uuid":"98695"}]}

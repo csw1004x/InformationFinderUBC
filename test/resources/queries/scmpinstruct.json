@@ -1,0 +1,20 @@
+{
+  "title": "scmp is: instructor",
+  "input": {
+    "WHERE": {
+      "IS": {
+        "sections_instructor": "richer, harvey"
+      }
+    },
+    "OPTIONS": {
+      "COLUMNS": [
+        "sections_dept",
+        "sections_id",
+        "sections_instructor",
+        "sections_uuid"
+      ],
+      "ORDER": "sections_uuid"
+    }
+  },
+  "errorExpected": false,
+  "expected": [{"sections_dept":"astr","sections_id":"310","sections_instructor":"richer, harvey","sections_uuid":"22258"},{"sections_dept":"astr","sections_id":"205","sections_instructor":"richer, harvey","sections_uuid":"23074"},{"sections_dept":"astr","sections_id":"310","sections_instructor":"richer, harvey","sections_uuid":"23078"},{"sections_dept":"astr","sections_id":"310","sections_instructor":"richer, harvey","sections_uuid":"26592"},{"sections_dept":"astr","sections_id":"205","sections_instructor":"richer, harvey","sections_uuid":"30095"},{"sections_dept":"astr","sections_id":"310","sections_instructor":"richer, harvey","sections_uuid":"51341"},{"sections_dept":"astr","sections_id":"205","sections_instructor":"richer, harvey","sections_uuid":"76035"},{"sections_dept":"astr","sections_id":"310","sections_instructor":"richer, harvey","sections_uuid":"85610"},{"sections_dept":"astr","sections_id":"310","sections_instructor":"richer, harvey","sections_uuid":"92825"}]}

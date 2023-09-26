@@ -1,0 +1,8 @@
+{
+  "title": "not json formatted properly",
+  "input": {
+
+  },
+  "errorExpected": true,
+  "expected": "InsightError"
+}

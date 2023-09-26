@@ -1,0 +1,22 @@
+{
+  "title": "or shoud have 1 key error",
+  "input": {
+    "WHERE": {
+      "OR": [
+        {
+
+        }
+
+      ]
+    },
+    "OPTIONS": {
+      "COLUMNS": [
+        "sections_dept",
+        "sections_avg",
+        "sections_uuid"
+      ],
+      "ORDER": "sections_uuid"
+    }
+  },
+  "errorExpected": true,
+  "expected": "InsightError"}
