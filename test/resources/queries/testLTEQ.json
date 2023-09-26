@@ -1,0 +1,28 @@
+{
+  "title": "less than equal to",
+  "input": {
+    "WHERE": {
+      "OR": [
+        {
+          "EQ": {
+            "sections_avg": 30
+          }
+        },
+        {
+          "LT": {
+            "sections_avg": 30
+          }
+        }
+      ]
+    },
+    "OPTIONS": {
+      "COLUMNS": [
+        "sections_dept",
+        "sections_avg",
+        "sections_uuid"
+      ],
+      "ORDER": "sections_uuid"
+    }
+  },
+  "errorExpected": false,
+  "expected": [{"sections_dept":"busi","sections_avg":4,"sections_uuid":"16427"},{"sections_dept":"busi","sections_avg":4,"sections_uuid":"16428"},{"sections_dept":"wood","sections_avg":1,"sections_uuid":"49835"},{"sections_dept":"lfs","sections_avg":0,"sections_uuid":"56402"},{"sections_dept":"lfs","sections_avg":0,"sections_uuid":"56403"},{"sections_dept":"fopr","sections_avg":4.5,"sections_uuid":"84769"},{"sections_dept":"frst","sections_avg":0,"sections_uuid":"89536"}]}

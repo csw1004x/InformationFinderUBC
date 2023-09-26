@@ -1,0 +1,19 @@
+{
+  "title": "ID not in",
+  "input": {
+    "WHERE": {
+      "GT": {
+        "sections_avg": 97
+      }
+    },
+    "OPTIONS": {
+      "COLUMNS": [
+        "ubc_dept",
+        "ubc_avg"
+      ],
+      "ORDER": "ubc_avg"
+    }
+  },
+  "errorExpected": true,
+  "expected": "InsightError"
+}

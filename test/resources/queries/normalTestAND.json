@@ -1,0 +1,28 @@
+{
+  "title": "normalTest AND",
+  "input": {
+    "WHERE": {
+      "AND": [
+        {
+          "EQ": {
+            "sections_avg": 80
+          }
+        },
+        {
+          "IS": {
+            "sections_dept": "cpsc"
+          }
+        }
+      ]
+    },
+    "OPTIONS": {
+      "COLUMNS": [
+        "sections_dept",
+        "sections_avg",
+        "sections_uuid"
+      ],
+      "ORDER": "sections_uuid"
+    }
+  },
+  "errorExpected": false,
+  "expected": [{"sections_dept":"cpsc","sections_avg":80,"sections_uuid":"46810"},{"sections_dept":"cpsc","sections_avg":80,"sections_uuid":"46811"}]}

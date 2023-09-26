@@ -1,0 +1,20 @@
+{
+  "title": "missing Columns",
+  "input": {
+    "WHERE": {
+      "LT": {
+        "sections_avg": 30
+      }
+    },
+    "OPTIONS": {
+      "": [
+        "sections_dept",
+        "sections_avg",
+        "sections_uuid"
+      ],
+      "ORDER": "sections_uuid"
+    }
+  },
+  "errorExpected": true,
+  "expected": "InsightError"
+}

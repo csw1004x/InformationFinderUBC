@@ -1,0 +1,18 @@
+{
+  "title": "fails empty for queries",
+  "input": {
+    "WHERE": {
+      "GT": {
+        "_avg": 97
+      }
+    },
+    "OPTIONS": {
+      "COLUMNS": [
+        "_dept",
+        "_avg"
+      ]
+    }
+  },
+  "errorExpected": true,
+  "expected": "InsightError"
+}
