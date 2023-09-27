@@ -70,6 +70,22 @@ export default class InsightFacade implements IInsightFacade {
 			return Promise.reject(InsightError);
 		}
 
+		// confirmed to have the basic components of a valid query.
+		let knownQuery = query as any;
+		let ifString: string = pq.bodyHelper(knownQuery["WHERE"]);
+		let attributesString: string = pq.attributesHelper(knownQuery["OPTIONS"]);
+		let orderString: string = pq.orderHelper(knownQuery["OPTIONS"]);
+
+		// specific function to be clarified once we know the datastructure
+		// let filteredSections = InsightResult[];
+		// for s in sections {
+		// 	if(ifString) {
+		// 		let newResult = {}
+		// 		for attribute of attributeString
+		// 		filteredSections.add()
+		// 	}
+		// }
+
 		return Promise.reject(new InsightError());
 	}
 
