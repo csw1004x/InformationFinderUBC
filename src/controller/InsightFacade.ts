@@ -159,9 +159,4 @@ export default class InsightFacade implements IInsightFacade {
 
 		return Promise.reject(new InsightError());
 	}
-
-
-	public listDatasets(): Promise<InsightDataset[]> {
-		return Promise.reject("Not implemented.");
-	}
 }
