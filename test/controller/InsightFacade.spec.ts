@@ -196,7 +196,6 @@ describe("InsightFacade", function () {
 
 		it ("should reject with not a section with no avg", async function () {
 			sections3 = getContentFromArchives("noAvg.zip");
-
 			try {
 				const result = await facade.addDataset("ubc", sections3, InsightDatasetKind.Sections);
 				expect.fail("Should have rejected!");
