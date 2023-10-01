@@ -7,6 +7,7 @@ import {
 	NotFoundError, ResultTooLargeError
 } from "./IInsightFacade";
 import JSZip from "jszip";
+import {SectionsList} from "../classes/SectionList";
 
 /**
  * This is the main programmatic entry point for the project.
@@ -18,15 +19,24 @@ export default class InsightFacade implements IInsightFacade {
 		console.log("InsightFacadeImpl::init()");
 	}
 
+	public allID: string[] = [];
+
 	public async addDataset(id: string, content: string, kind: InsightDatasetKind): Promise<string[]> {
 		try{
 			if (!this.isIDKindValid(id, kind)){
 				return Promise.reject(new InsightError());
 			}
 
+			// check if id is already in allID
+			if (this.allID.includes(id)){
+				return Promise.reject(new InsightError());
+			}
+
+			const dataList = new SectionsList(id, kind);
+			this.allID.push(id);
+
 			const zip = new JSZip();
 			await zip.loadAsync(content, {base64: true});
-
 			const coursesFolder = zip.folder("courses");
 
 			// Check if there is a courses folder
@@ -42,27 +52,23 @@ export default class InsightFacade implements IInsightFacade {
 				return Promise.reject(new InsightError());
 			}
 
-			const jsonDataArray: any[] = [];
-
 			// Use Promise.all to process all files in parallel and store the results in an array
 			const fileContentsPromises = files.map(async (file) => {
 				const fileContent = await file.async("text");
 				try {
 					const fileJson = JSON.parse(fileContent);
-					jsonDataArray.push(fileJson); // Store the JSON data in the array
+					// add data here?
+					// year = 1980 is overall
+					// convert year from string into number
+					// uuid?? (check)
+					// while ur adding if field isnt there just bail
+					this.isDataValidAndInsert(fileJson);
 				} catch (err) {
 					console.log("Invalid json file.");
 				}
 			});
 
 			await Promise.all(fileContentsPromises);
-
-			// Now you have all the JSON data in the `jsonDataArray`
-			console.log("All JSON data:");
-			jsonDataArray.forEach((jsonData, index) => {
-				console.log(`JSON Data ${index + 1}:`);
-				console.log(JSON.stringify(jsonData, null, 2)); // Use JSON.stringify for pretty-printing
-			});
 
 		} catch (err){
 			return Promise.reject(new InsightError());
@@ -76,22 +82,22 @@ export default class InsightFacade implements IInsightFacade {
 	// The fields are: uuid, id, title, instructor, audit, year, pass, fail, avg, dept
 	// If any field is missing, return false. Otherwise, return true.
 	// all fields are in the result key.
-	private isDataValidAndInsert(jsonData: any): boolean {
+	private isDataValidAndInsert(jsonData: any): void {
 		const requiredFields = ["id", "Course", "Title", "Professor",
 			"Audit", "Year", "Pass", "Fail", "Avg", "Subject"];
 		for (let index in jsonData.result){
-			console.log(jsonData.result[index]);
+			// console.log(jsonData.result[index]);
 			for (const field of requiredFields) {
 				if (!Object.prototype.hasOwnProperty.call(jsonData.result[index],field)) {
-					return false;
+					continue;
 				}
 			}
 		}
-		return true;
 	}
 
 	private isIDKindValid(id: string,  kind: InsightDatasetKind): boolean {
 		// When id is invalid
+		// catch 2+ white spaces
 		if (id.includes("_") || id === " " || id.length === 0 ||
 			id === "\t" || id === "\n" || id === "\r" || id === "\f" || id === "\v") {
 			return false;
@@ -101,12 +107,16 @@ export default class InsightFacade implements IInsightFacade {
 		if (kind !== InsightDatasetKind.Sections) {
 			return false;
 		}
+
 		return true;
 	}
 
-	private writeToDisk(): Promise<string> {
-		return Promise.reject("Not implemented.");
-	}
+	// Write the function named writeToDisk that writes the SectionsList into a file.
+	// The function should take a SectionsList object as an argument.
+	// The function should return a Promise that resolves to a boolean.
+	// The function should write the SectionsList into a file named id.json.
+	// The function should return true if the file is written successfully.
+	// Otherwise, return false.
 
 	public removeDataset(id: string): Promise<string> {
 		// When id is invalid
@@ -117,7 +127,6 @@ export default class InsightFacade implements IInsightFacade {
 
 		return Promise.reject("Not implemented.");
 	}
-
 
 	public listDatasets(): Promise<InsightDataset[]> {
 		return Promise.reject("Not implemented.");
