@@ -2,8 +2,8 @@ import {Sections} from "./Sections";
 import {InsightDatasetKind} from "../controller/IInsightFacade";
 
 export class SectionsList {
-	private id: string;
 	private sectionList: Sections[];
+	private id: string;
 	private kind: InsightDatasetKind;
 
 	constructor(id: string, kind: InsightDatasetKind){
@@ -28,9 +28,21 @@ export class SectionsList {
 		return this.sectionList;
 	}
 
-	/*
-	public addCourses(){
-
+	// A function that adds a section to the sectionList
+	public addSection(section: Sections): void {
+		this.sectionList.push(section);
 	}
-	*/
+
+	// A function that returns the number of sections in the sectionList
+	public getNumberOfSections(): number {
+		return this.sectionList.length;
+	}
+
+	// Write a function where it prints all the sections in the sectionList using printAllFields()
+	// using for of loop
+	public printAllSections(): void {
+		for (const section of this.sectionList){
+			section.printALlFields();
+		}
+	}
 }
