@@ -9,7 +9,7 @@ import {
 
 import JSZip from "jszip";
 import {Sections} from "../classes/Sections";
-import {SectionsList} from "../classes/SectionList";
+import {SectionsList} from "../classes/SectionsList";
 import * as fs from "fs-extra";
 import * as pq from "./performQueryHelper"; // importing performQueryHelper
 
