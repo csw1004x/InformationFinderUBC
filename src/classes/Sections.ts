@@ -65,4 +65,20 @@ export class Sections {
 		return this.sectionAudit;
 	}
 
+	public printALlFields(){
+		// Print all the fields of the section in a readable manner
+		let tmp: string = "sectionUUID: " + this.sectionUUID + "\n" +
+			"sectionID: " + this.sectionID + "\n" +
+			"sectionTitle: " + this.sectionTitle + "\n" +
+			"sectionInstructor: " + this.sectionInstructor + "\n" +
+			"sectionDept: " + this.sectionDept + "\n" +
+			"sectionYear: " + this.sectionYear + "\n" +
+			"sectionAvg: " + this.sectionAvg + "\n" +
+			"sectionPass: " + this.sectionPass + "\n" +
+			"sectionFail: " + this.sectionFail + "\n" +
+			"sectionAudit: " + this.sectionAudit + "\n";
+		console.log(tmp);
+	}
+
+
 }
