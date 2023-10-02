@@ -6,6 +6,7 @@ import {
 	InsightResult,
 	NotFoundError, ResultTooLargeError
 } from "./IInsightFacade";
+
 import JSZip from "jszip";
 import {SectionsList} from "../classes/SectionsList";
 import {Sections} from "../classes/Sections";
@@ -57,11 +58,6 @@ export default class InsightFacade implements IInsightFacade {
 				const fileContent = await file.async("text");
 				try {
 					const fileJson = JSON.parse(fileContent);
-					// add data here?
-					// year = 1980 is overall
-					// convert year from string into number
-					// uuid?? (check)
-					// while ur adding if field isnt there just bail
 					this.isDataValid(fileJson, dataList);
 				} catch (err) {
 					// skip
@@ -166,11 +162,9 @@ export default class InsightFacade implements IInsightFacade {
 		}
 
 		// When kind is not sections
-		if (kind !== InsightDatasetKind.Sections) {
-			return false;
-		}
+		return kind === InsightDatasetKind.Sections;
 
-		return true;
+
 	}
 
 	public removeDataset(id: string): Promise<string> {
@@ -183,11 +177,17 @@ export default class InsightFacade implements IInsightFacade {
 		return Promise.reject("Not implemented.");
 	}
 
+
 	public listDatasets(): Promise<InsightDataset[]> {
 		return Promise.reject("Not implemented.");
 	}
 
-	public performQuery(query: unknown): Promise<InsightResult[]> {
+	/**
+	 * @param query  The query to be performed.
+	 * @return Promise <InsightResult[]>
+	 */
+	public async performQuery(query: unknown): Promise<InsightResult[]> {
 		return Promise.reject(new InsightError());
 	}
+
 }
