@@ -9,7 +9,7 @@ import {
 
 import JSZip from "jszip";
 import {Sections} from "../classes/Sections";
-import {SectionsList} from "../classes/SectionList";
+import {SectionsList} from "../classes/SectionsList";
 import * as fs from "fs-extra";
 import * as pq from "./performQueryHelper"; // importing performQueryHelper
 
@@ -249,13 +249,10 @@ export default class InsightFacade implements IInsightFacade {
 
 		// Reject:
 		// if a query is too large -> ResultTooLargeError
-
 		let datasets = await this.listDatasets();
 		if (!pq.isValidQuery(query, datasets)) {
 			return Promise.reject(InsightError);
 		}
-    
 		return Promise.reject(new InsightError());
 	}
-
 }
