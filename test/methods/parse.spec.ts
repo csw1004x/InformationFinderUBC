@@ -65,15 +65,19 @@ describe("Tests for performQueryHelper", () => {
 
 	describe("Basic Checks for Parsing", () => {
 		it("eval for parsing", () => {
-			let one = 1;
-			let s = "return (x < 2)";
-			let customFunction = new Function("x",s);
+			// let x = 1;
+			// eval(String.raw`console.log(x < 2)`);
+
+			let one = {x: 1, y: "str"};
+			let s = String.raw`return (i.x < 2 && i.y === "str")`;
+			let customFunction = new Function("i",s);
 			if (customFunction(one)) {
+				console.log(one);
+				console.log(one.x);
 				console.log("it worked!");
 			} else {
 				console.log("fail...");
 			}
-
 		});
 
 		it("unit test: mComparator", () => {
