@@ -249,13 +249,10 @@ export default class InsightFacade implements IInsightFacade {
 
 		// Reject:
 		// if a query is too large -> ResultTooLargeError
-
 		let datasets = await this.listDatasets();
 		if (!pq.isValidQuery(query, datasets)) {
 			return Promise.reject(InsightError);
 		}
-    
 		return Promise.reject(new InsightError());
 	}
-
 }
