@@ -39,31 +39,17 @@ describe("InsightFacade", function () {
 		sections2 = getContentFromArchives("courses_2.zip");
 		sectionsNotCourse = getContentFromArchives("not_courses.zip");
 
-		// Just in case there is anything hanging around from a previous run of the test suite
-		clearDisk();
 	});
 
 	describe("Add/Remove/List Dataset", function () {
-		before(function () {
-			console.info(`Before: ${this.test?.parent?.title}`);
-		});
 
-		beforeEach(function () {
-			// This section resets the insightFacade instance
-			// This runs before each test
-			console.info(`BeforeTest: ${this.currentTest?.title}`);
+		beforeEach(function() {
+
+			clearDisk();
 			facade = new InsightFacade();
+
 		});
 
-		after(function () {
-			console.info(`After: ${this.test?.parent?.title}`);
-		});
-
-		afterEach(function () {
-			// This section resets the data directory (removing any cached data)
-			// This runs after each test, which should make each test independent of the previous one
-			console.info(`AfterTest: ${this.currentTest?.title}`);
-		});
 
 		// This is a unit test. You should create more like this!
 		it ("should reject with  an empty dataset id", function() {
@@ -129,18 +115,18 @@ describe("InsightFacade", function () {
 			}
 		});
 
-		// it("Fulfill: Handling Crashes", async function () {
-		// 	const id = "section1";
-		// 	const result = await facade.addDataset(id, sections, InsightDatasetKind.Sections);
-		//
-		// 	let newInstance = new InsightFacade();
-		//
-		// 	let list = await newInstance.listDatasets();
-		// 	expect(list.length).to.equal(1);
-		// 	expect(list[0].id).to.equal(id);
-		// 	expect(list[0].kind).to.equal(InsightDatasetKind.Sections);
-		// 	expect(list[0].numRows).to.equal(64612);
-		// });
+		it("Fulfill: Handling Crashes", async function () {
+			const id = "section1";
+			const result = await facade.addDataset(id, sections, InsightDatasetKind.Sections);
+
+			let newInstance = new InsightFacade();
+
+			let list = await newInstance.listDatasets();
+			expect(list.length).to.equal(1);
+			expect(list[0].id).to.equal(id);
+			expect(list[0].kind).to.equal(InsightDatasetKind.Sections);
+			expect(list[0].numRows).to.equal(264);
+		});
 
 		it("Reject: Folder not courses", async function () {
 			const id = "section1";
@@ -358,20 +344,20 @@ describe("InsightFacade", function () {
 			expect(result).to.be.a("string").that.equals(id);
 		});
 
-		it("Fulfill: Remove dataset successfully multiple", async function () {
-			const id1 = "section1";
-			const id2 = "section2";
-			await facade.addDataset(id1, sections1, InsightDatasetKind.Sections);
-			await facade.addDataset(id2, sections2, InsightDatasetKind.Sections);
+		it ("should successfully remove multiple id", async function() {
+			try {
+				await facade.addDataset("ubc", sections, InsightDatasetKind.Sections);
+				await facade.addDataset("ubcTwo", sections, InsightDatasetKind.Sections);
 
-			const result1 = await facade.removeDataset(id1);
-			expect(result1).to.be.a("string").that.equals(id1);
+				const result1 = await facade.removeDataset("ubc");
+				const result2 = await facade.removeDataset("ubcTwo");
 
-			const result2 = await facade.removeDataset(id2);
-			expect(result2).to.be.a("string").that.equals(id2);
+				expect(result1).to.deep.equal("ubc");
+				expect(result2).to.deep.equal("ubcTwo");
+			} catch (err){
+				expect.fail("should not have rejected!");
+			}
 
-			let list = await facade.listDatasets();
-			expect(list.length).to.equal(0);
 		});
 
 		it ("should successfully remove id caps num symbols", async function () {
@@ -454,16 +440,62 @@ describe("InsightFacade", function () {
 			expect(dataset1Presence).to.have.lengthOf.at.least(1);
 		});
 
-		it("Fulfill: list multiple dataset", async function () {
-			await facade.addDataset("id1", sections1, InsightDatasetKind.Sections);
-			await facade.addDataset("id2", sections2, InsightDatasetKind.Sections);
-			let result = await facade.listDatasets();
+		it("should list one dataset", async function() {
+			try{
+				const result = await facade.addDataset("ubc", sections, InsightDatasetKind.Sections);
 
-			const dataset1Presence = result.filter((dataset) => dataset.id === "id1");
-			expect(dataset1Presence).to.have.lengthOf.at.least(1);
+				expect(result).to.deep.equal(["ubc"]);
 
-			const dataset2Presence = result.filter((dataset) => dataset.id === "id2");
-			expect(dataset2Presence).to.have.lengthOf.at.least(1);
+				const datasets = await facade.listDatasets();
+
+				// Validation
+				expect(datasets).to.deep.equal([{
+					id: "ubc",
+					kind: InsightDatasetKind.Sections,
+					numRows: 264
+				}]);
+			}  catch (err){
+				expect.fail("should not have rejected!");
+			}
+
+		});
+
+		it("should list multiple dataset", async function() {
+			try{
+				const result = await facade.addDataset("ubc", sections, InsightDatasetKind.Sections);
+
+				expect(result).to.deep.equal(["ubc"]);
+
+				const result2 = await facade.addDataset("ubc2", sections, InsightDatasetKind.Sections);
+
+				expect(result2).to.deep.equal(["ubc", "ubc2"]);
+
+				const datasets = await facade.listDatasets();
+
+				// Validation
+				expect(datasets).to.deep.equal([{
+					id: "ubc",
+					kind: InsightDatasetKind.Sections,
+					numRows: 264
+				},{
+					id: "ubc2",
+					kind: InsightDatasetKind.Sections,
+					numRows: 264
+				}]);
+			} catch (err){
+				expect.fail("should not have rejected!");
+			}
+
+		});
+
+		it("should list no dataset", async function() {
+			try {
+				const datasets = await facade.listDatasets();
+				expect(datasets).to.deep.equal([]);
+			} catch (err){
+				expect.fail("should not have rejected!");
+			}
+
 		});
 	});
 

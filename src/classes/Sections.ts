@@ -1,82 +1,83 @@
 export class Sections {
-	private sectionUUID: string;
-	private sectionID: string;
-	private sectionTitle: string;
-	private sectionInstructor: string;
-	private sectionDept: string;
-	private sectionYear: number;
-	private sectionAvg: number;
-	private sectionPass: number;
-	private sectionFail: number;
-	private sectionAudit: number;
+	private uuid: string;
+	private id: string;
+	private title: string;
+	private instructor: string;
+	private dept: string;
+	private year: number;
+	private avg: number;
+	private pass: number;
+	private fail: number;
+	private audit: number;
 
 	constructor(sectionUUID: string, sectionID: string, sectionTitle: string,
 		sectionInstructor: string, sectionDept: string, sectionYear: number,
 		sectionAvg: number, sectionPass: number, sectionFail: number, sectionAudit: number) {
-		this.sectionUUID = sectionUUID;
-		this.sectionID = sectionID;
-		this.sectionTitle = sectionTitle;
-		this.sectionInstructor = sectionInstructor;
-		this.sectionDept = sectionDept;
-		this.sectionYear = sectionYear;
-		this.sectionAvg = sectionAvg;
-		this.sectionPass = sectionPass;
-		this.sectionFail = sectionFail;
-		this.sectionAudit = sectionAudit;
+		this.uuid = sectionUUID;
+		this.id = sectionID;
+		this.title = sectionTitle;
+		this.instructor = sectionInstructor;
+		this.dept = sectionDept;
+		this.year = sectionYear;
+		this.avg = sectionAvg;
+		this.pass = sectionPass;
+		this.fail = sectionFail;
+		this.audit = sectionAudit;
 	}
 
 	public get getSectionUUID(){
-		return this.sectionUUID;
+		return this.uuid;
 	}
 
 	public get getSectionID(){
-		return this.sectionID;
+		return this.id;
 	}
 
 	public get getSectionTitle(){
-		return this.sectionTitle;
+		return this.title;
 	}
 
 	public get getSectionInstructor(){
-		return this.sectionInstructor;
+		return this.instructor;
 	}
 
 	public get getSectionDept(){
-		return this.sectionDept;
+		return this.dept;
 	}
 
 	public get getSectionYear(){
-		return this.sectionYear;
+		return this.year;
 	}
 
 	public get getSectionAvg(){
-		return this.sectionAvg;
+		return this.avg;
 	}
 
 	public get getSectionPass(){
-		return this.sectionPass;
+		return this.pass;
 	}
 
 	public get getSectionFail(){
-		return this.sectionFail;
+		return this.fail;
 	}
 
 	public get getSectionAudit(){
-		return this.sectionAudit;
+		return this.audit;
 	}
+
 
 	public printALlFields(){
 		// Print all the fields of the section in a readable manner
-		let tmp: string = "sectionUUID: " + this.sectionUUID + "\n" +
-			"sectionID: " + this.sectionID + "\n" +
-			"sectionTitle: " + this.sectionTitle + "\n" +
-			"sectionInstructor: " + this.sectionInstructor + "\n" +
-			"sectionDept: " + this.sectionDept + "\n" +
-			"sectionYear: " + this.sectionYear + "\n" +
-			"sectionAvg: " + this.sectionAvg + "\n" +
-			"sectionPass: " + this.sectionPass + "\n" +
-			"sectionFail: " + this.sectionFail + "\n" +
-			"sectionAudit: " + this.sectionAudit + "\n";
+		let tmp: string = "sectionUUID: " + this.uuid + "\n" +
+			"sectionID: " + this.id + "\n" +
+			"sectionTitle: " + this.title + "\n" +
+			"sectionInstructor: " + this.instructor + "\n" +
+			"sectionDept: " + this.dept + "\n" +
+			"sectionYear: " + this.year + "\n" +
+			"sectionAvg: " + this.avg + "\n" +
+			"sectionPass: " + this.pass + "\n" +
+			"sectionFail: " + this.fail + "\n" +
+			"sectionAudit: " + this.audit + "\n";
 		console.log(tmp);
 	}
 

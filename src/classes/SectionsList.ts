@@ -2,8 +2,8 @@ import {Sections} from "./Sections";
 import {InsightDatasetKind} from "../controller/IInsightFacade";
 
 export class SectionsList {
-	private id: string;
 	private sectionList: Sections[];
+	private id: string;
 	private kind: InsightDatasetKind;
 
 	constructor(id: string, kind: InsightDatasetKind){

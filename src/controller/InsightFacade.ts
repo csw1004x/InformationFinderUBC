@@ -4,7 +4,7 @@ import {
 	InsightDatasetKind,
 	InsightError,
 	InsightResult,
-	NotFoundError, ResultTooLargeError
+	NotFoundError
 } from "./IInsightFacade";
 
 import JSZip from "jszip";
@@ -71,7 +71,7 @@ export default class InsightFacade implements IInsightFacade {
 			}
 			this.allID.push(id);
 			// print allId
-			console.log(this.allID);
+			// console.log(this.allID);
 			await this.writeDataToDisk(dataList, id);
 
 		} catch (err){
@@ -92,9 +92,9 @@ export default class InsightFacade implements IInsightFacade {
 			// Write the JSON string to the file
 			await fs.writeFileSync(filePath, jsonString);
 
-			console.log(`Class instance has been written to ${filePath}`);
+			// console.log(`Class instance has been written to ${filePath}`);
 		} catch (err) {
-			console.error(`Error writing class instance to ${filePath}: ${err}`);
+			// console.error(`Error writing class instance to ${filePath}: ${err}`);
 		}
 
 	}
@@ -132,7 +132,7 @@ export default class InsightFacade implements IInsightFacade {
 		let sectionInstructor: string = jsonData["Professor"].toString();
 		let sectionDept: string = jsonData["Subject"].toString();
 
-		let tmp: string = jsonData["Year"].toString();
+		let tmp: string = jsonData["Section"].toString();
 		let sectionYear: number;
 		if (tmp === "overall"){
 			sectionYear = 1900;
@@ -174,12 +174,64 @@ export default class InsightFacade implements IInsightFacade {
 			return Promise.reject(new InsightError());
 		}
 
-		return Promise.reject("Not implemented.");
+		// When id is not in allID
+		if (!this.allID.includes(id)){
+			return Promise.reject(new NotFoundError());
+		}
+
+		const filename = id + ".json";
+		const filePath = "./data/" + filename;
+		fs.remove(filePath)
+			.then(() => {
+				// console.log('File deleted successfully');
+			})
+			.catch((err) => {
+				// console.error(`Error deleting file: ${err}`);
+			});
+
+		return Promise.resolve(id);
 	}
 
 
-	public listDatasets(): Promise<InsightDataset[]> {
-		return Promise.reject("Not implemented.");
+	public async listDatasets(): Promise<InsightDataset[]> {
+		const datasetList: InsightDataset[] = [];
+		const dataDir = "./data";
+
+		try {
+			await fs.ensureDir(dataDir);
+			const files = fs.readdirSync(dataDir);
+
+			// Create an array of promises to read and parse the JSON files concurrently
+			const filePromises = files.map(async (file) => {
+				const id = file.split(".")[0];
+				const kind = InsightDatasetKind.Sections;
+				let numRows = 0;
+
+				try {
+					const filePath = `${dataDir}/${file}`;
+					const fileContents = await fs.readFile(filePath, "utf8");
+					const jsonData = JSON.parse(fileContents);
+
+					if (jsonData && jsonData.sectionList && Array.isArray(jsonData.sectionList)) {
+						numRows = jsonData.sectionList.length;
+					}
+				} catch (error) {
+					// Handle errors here, or skip as needed
+				}
+
+				// Check if numRows is greater than 0 before pushing to the datasetList
+				if (numRows > 0) {
+
+					datasetList.push({id, kind, numRows});
+				}
+			});
+
+			// Wait for all file promises to resolve
+			await Promise.all(filePromises);
+		} catch (error) {
+			// dont need to handle for list
+		}
+		return Promise.resolve(datasetList);
 	}
 
 	/**
