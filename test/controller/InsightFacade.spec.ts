@@ -75,8 +75,21 @@ describe("InsightFacade", function () {
 			expect(result).to.include(id2);
 		});
 
-		it("should accept valid chain", async function () {
-			try {
+		it("Fulfill: Add dataset successfully multiple + remove", async function () {
+			const id1 = "section1";
+
+			let result;
+			await facade.addDataset(id1, sections1, InsightDatasetKind.Sections);
+
+			await facade.removeDataset(id1);
+
+			result = await facade.addDataset(id1, sections1, InsightDatasetKind.Sections);
+
+			expect(result).to.include(id1);
+		});
+
+		it ("should accept valid chain", async function () {
+			try{
 				const result1 = await facade.addDataset("ubc1", sections, InsightDatasetKind.Sections);
 				const result2 = await facade.addDataset("ubc2", sections, InsightDatasetKind.Sections);
 
@@ -428,14 +441,12 @@ describe("InsightFacade", function () {
 				const datasets = await facade.listDatasets();
 
 				// Validation
-				expect(datasets).to.deep.equal([
-					{
-						id: "ubc",
-						kind: InsightDatasetKind.Sections,
-						numRows: 264,
-					},
-				]);
-			} catch (err) {
+				expect(datasets).to.have.deep.members([{
+					id: "ubc",
+					kind: InsightDatasetKind.Sections,
+					numRows: 264
+				}]);
+			}  catch (err){
 				expect.fail("should not have rejected!");
 			}
 		});
@@ -453,19 +464,16 @@ describe("InsightFacade", function () {
 				const datasets = await facade.listDatasets();
 
 				// Validation
-				expect(datasets).to.have.deep.members([
-					{
-						id: "ubc",
-						kind: InsightDatasetKind.Sections,
-						numRows: 264,
-					},
-					{
-						id: "ubc2",
-						kind: InsightDatasetKind.Sections,
-						numRows: 264,
-					},
-				]);
-			} catch (err) {
+				expect(datasets).to.have.deep.members([{
+					id: "ubc",
+					kind: InsightDatasetKind.Sections,
+					numRows: 264
+				},{
+					id: "ubc2",
+					kind: InsightDatasetKind.Sections,
+					numRows: 264
+				}]);
+			} catch (err){
 				expect.fail("should not have rejected!");
 			}
 		});
