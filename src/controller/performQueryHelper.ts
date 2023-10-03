@@ -1,48 +1,27 @@
 import {InsightDataset, InsightError, InsightResult} from "./IInsightFacade";
+import * as fs from "fs-extra";
+import InsightFacade from "./InsightFacade";
 
 // validate query
 // return true if the query is valid, false if invalid
-export function isValidQuery(query: unknown, datasets: InsightDataset[]): boolean {
-	// Reject:
-	// 1. if a query is incorrectly formatted -> InsightError
-	// 2. if a query references a dataset not added (in mem or disk) -> InsightError
-	// 3. if a query references multiple datasets -> InsightError
-
+export function queryValidator(query: unknown): boolean {
 	// check query data type
-	if (query === null || query === undefined || typeof query !== "object") {
-		return false;
+	if (query === null || query === undefined || query === "" || typeof query !== "object") {
+		throw new InsightError();
 	}
 
 	// check it contains two mandatory components: WHERE and OPTIONS
 	if (!("WHERE" in query && "OPTIONS" in query)) {
-		return false;
-	}
-
-	// dataset validity check
-	for (let dataset of datasets) {
-		// below code for debugging purpose only
-		// console.log(dataset.id);
+		throw new InsightError();
 	}
 
 	return true;
-}
-
-export function parseQuery(query: unknown, datasets: InsightDataset[]): InsightResult[] {
-
-	// dataset validity check
-	for (let dataset of datasets) {
-		// below code for debugging purpose only
-		// console.log(dataset.id);
-	}
-
-	return [];
 }
 
 export function bodyHelper(query: any): string {
 	try {
 		let queryObject = query as any;
 		let keys: string[] = Object.keys(queryObject);
-		// let blockString: string = "(";
 		let blockString: string = "";
 
 		let LOGIC = ["AND", "OR"];
@@ -52,11 +31,11 @@ export function bodyHelper(query: any): string {
 
 		for (const key of keys) {
 			if (LOGIC.includes(key)) {
-				blockString += logicHelper(queryObject[key],key);
+				blockString += logicHelper(queryObject[key], key);
 			} else if (MCOMPARATOR.includes(key)) {
-				blockString += mComparatorHelper(queryObject[key],key);
+				blockString += mComparatorHelper(queryObject[key], key);
 			} else if (key === SCOMPARATOR) {
-				blockString += sComparatorHelper(queryObject[key],key);
+				blockString += sComparatorHelper(queryObject[key], key);
 			} else if (key === NEGATION) {
 				blockString += "!";
 				blockString += bodyHelper(queryObject[key]);
@@ -64,14 +43,13 @@ export function bodyHelper(query: any): string {
 				throw new Error();
 			}
 		}
-		// return blockString + ")";
-		return blockString ;
-	}catch(error) {
+		return blockString;
+	} catch (error) {
 		console.log("error caught at bodyHelper");
 		throw new InsightError();
 	}
 }
-//
+
 // REQUIRE: query needs to follow LOGICCOMPARISON
 // filterList: list of filters
 // logic: "AND" | "OR"
@@ -82,7 +60,7 @@ export function logicHelper(filterList: any, logic: string): string {
 	let blockString: string = "(";
 	let conjunction: string;
 
-	if(logic === "AND") {
+	if (logic === "AND") {
 		conjunction = " && ";
 	} else {
 		conjunction = " || ";
@@ -107,27 +85,27 @@ export function sComparatorHelper(sDict: any, key: string): string {
 	let idstring = sKeyList[0];
 	let sfield = sKeyList[1];
 
-	// TODO: add something about tracking id
-	// TODO: figure out how we'll use "idstring".
-	blockString += sfield;
+	blockString += "section." + sfield;
 
 	// check field validity
-	if (!["dept","id","instructor","title","uuid"].includes(sfield)) {
+	if (!["dept", "id", "instructor", "title", "uuid"].includes(sfield)) {
 		throw new InsightError();
 	}
 
 	if (inputstring.startsWith("*")) {
 		if (inputstring.endsWith("*")) {
-			blockString += ".includes(\"" + inputstring.slice(1,-1) + "\")";
+			blockString += '.includes("' + inputstring.slice(1, -1) + '")';
 		} else {
-			blockString += ".endsWith(\"" + inputstring.slice(1) + "\")";
+			blockString += '.endsWith("' + inputstring.slice(1) + '")';
 		}
 	} else if (inputstring.endsWith("*")) {
-		blockString += ".startsWith(\"" + inputstring.slice(0,inputstring.length - 1) + "\")";
+		blockString += '.startsWith("' + inputstring.slice(0, inputstring.length - 1) + '")';
+	} else if (inputstring.includes("*")) {
+		throw new InsightError();
 	} else {
-		blockString += " === \"" + inputstring.slice() + "\"";
+		blockString += ' === "' + inputstring.slice() + '"';
 	}
-	return blockString += ")";
+	return (blockString += ")");
 }
 
 // REQUIRE: query is of mcomparator
@@ -140,21 +118,12 @@ export function mComparatorHelper(mDict: any, key: string): string {
 		let idstring = mKeyList[0];
 		let mfield = mKeyList[1];
 
-		// below logs are for debugging
-		// console.log("mKey: " + mKey);
-		// console.log("idstring: " + idstring);
-		// console.log("mfield: " + mfield);
-		// console.log("mNumber: " + mNumber);
-
-
 		// check field validity
-		if (!["avg","pass","fail","audit","year"].includes(mfield)) {
+		if (!["avg", "pass", "fail", "audit", "year"].includes(mfield)) {
 			throw new InsightError();
 		}
 
-		// TODO: add something about tracking id
-		// TODO: figure out how we'll use "idstring".
-		blockString += mfield;
+		blockString += "section." + mfield;
 
 		if (key === "GT") {
 			blockString += " > ";
@@ -176,13 +145,128 @@ export function mComparatorHelper(mDict: any, key: string): string {
 	}
 }
 
-export function attributesHelper(query: any): string {
+export async function getSections(searchID: string) {
+	let dataDir = "./data";
+	await fs.ensureDir(dataDir);
+	let facade = new InsightFacade();
+	let datas = await facade.listDatasets();
 
-	return ""; // stub
+	// if corresponding data is found, load it to parsedJSON
+	let parsedJSON;
+	for (let data of datas) {
+		if (data.id === searchID) {
+			let filePath = "./data/" + data.id + ".json";
+			let fileContent = fs.readFileSync(filePath);
+			parsedJSON = JSON.parse(fileContent.toString());
+		}
+	}
+	return parsedJSON;
 }
 
+export function getID(query: any): string {
+	let idSet: Set<string> = new Set<string>();
+	getIDBody(query, idSet);
 
-export function orderHelper(query: any): string {
+	if (idSet.size !== 1) {
+		throw new InsightError();
+	}
 
-	return ""; // stub
+	let id: string = "";
+	for (const value of idSet.values()) {
+		id = value;
+	}
+
+	if (id === "") {
+		throw new InsightError();
+	}
+
+	return id;
+}
+
+function getIDBody(query: any, idSet: Set<string>): string {
+	try {
+		let queryObject = query as any;
+		let keys: string[] = Object.keys(queryObject);
+
+		let LOGIC = ["AND", "OR"];
+		let COMPARATOR = ["LT", "GT", "EQ", "IS"];
+		let NEGATION = "NOT";
+
+		for (const key of keys) {
+			if (LOGIC.includes(key)) {
+				for (let q of queryObject[key]) {
+					getIDBody(q, idSet);
+				}
+			} else if (COMPARATOR.includes(key)) {
+				getIDComparator(queryObject[key], idSet);
+			} else if (key === NEGATION) {
+				getIDBody(queryObject[key], idSet);
+			} else {
+				throw new Error();
+			}
+		}
+		return "";
+	} catch (error) {
+		console.log("error caught at getIDBody");
+		throw new InsightError();
+	}
+}
+
+// REQUIRE: query is of comparator
+function getIDComparator(sDict: any, idSet: Set<string>): string {
+	let sKey = Object.keys(sDict)[0];
+	let sKeyList = sKey.split("_");
+	let idString = sKeyList[0];
+	idSet.add(idString);
+
+	return idString;
+}
+
+// throws exception if any error is found
+// return true for testability
+export function columnsValidator(query: any, id: string): boolean {
+	if (query === undefined || query.length === 0) {
+		throw new InsightError();
+	}
+
+	let validKeys = ["avg", "pass", "fail", "audit", "year", "dept", "id", "instructor", "title", "uuid"];
+	for (let col of query) {
+		let keyList = col.split("_");
+		let idString = keyList[0];
+		let field = keyList[1];
+
+		if (idString !== id) {
+			throw new InsightError();
+		}
+		if (!validKeys.includes(field)) {
+			throw new InsightError();
+		}
+	}
+
+	return true;
+}
+
+export function optionsValidator(query: any): boolean {
+	let allowedFields = ["COLUMNS", "ORDER"];
+	for (let key in query) {
+		if (!allowedFields.includes(key)) {
+			throw new InsightError();
+		}
+	}
+	return true;
+}
+
+export function orderValidator(query: any, id: string): boolean {
+	if (query === undefined) {
+		return false;
+	}
+	let keyList = query.split("_");
+	let idString = keyList[0];
+	let field = keyList[1];
+
+	if (idString !== id) {
+		throw new InsightError();
+	}
+
+	return true;
 }

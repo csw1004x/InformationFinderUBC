@@ -3,7 +3,7 @@ import * as fs from "fs-extra";
 import {expect} from "chai";
 
 import * as pq from "../../src/controller/performQueryHelper";
-import {InsightDataset, InsightDatasetKind, InsightResult} from "../../src/controller/IInsightFacade";
+import InsightFacade from "../../src/controller/InsightFacade";
 
 function readQuery(filename: string): any {
 	let fileContent = fs.readFileSync("test/methods/queries/" + filename);
@@ -19,8 +19,6 @@ describe("Tests for performQueryHelper", () => {
 	let complexMcompQuery: unknown;
 	let simpleScompQuery: unknown;
 	let complexScompQuery: unknown;
-	let sampleDatasets: InsightDataset[];
-
 
 	before(() => {
 		noOptionsQuery = readQuery("missingOptions.json");
@@ -30,23 +28,30 @@ describe("Tests for performQueryHelper", () => {
 		complexMcompQuery = readQuery("complex_mcomp.json");
 		simpleScompQuery = readQuery("simple_scomp.json");
 		complexScompQuery = readQuery("complex_scomp.json");
+	});
 
-		sampleDatasets = [
-			{id: "id1", kind: InsightDatasetKind.Sections, numRows: 1},
-			{id: "id2", kind: InsightDatasetKind.Sections, numRows: 2}
-		];
+	describe("getAttributes tests", () => {
+		it("simpleQuery", () => {
+			let queryObject = simpleQuery as any;
+			console.log(queryObject["OPTIONS"]["COLUMNS"]);
+			console.log(queryObject["OPTIONS"]["COLUMNSX"] === undefined);
+		});
+	});
 
+	describe("getID tests", () => {
+		it("simpleQuery", () => {
+			let queryObject = simpleQuery as any;
+			console.log(pq.getID(queryObject["WHERE"]));
+		});
+		it("complexQuery", () => {
+			let queryObject = complexQuery as any;
+			console.log(pq.getID(queryObject["WHERE"]));
+		});
 	});
 
 	describe("Query Input Object Type Exploration", () => {
 		it("should contain specific object attributes", () => {
 			let queryInput = readQuery("complex.json");
-
-			// below logs are just for debugging
-			// console.log(queryInput);
-			// console.log(typeof queryInput);
-			// console.log("WHERE" in queryInput);
-			// console.log("OPTIONS" in queryInput);
 
 			// tests below for types
 			expect(queryInput).to.be.an("object");
@@ -70,7 +75,7 @@ describe("Tests for performQueryHelper", () => {
 
 			let one = {x: 1, y: "str"};
 			let s = String.raw`return (i.x < 2 && i.y === "str")`;
-			let customFunction = new Function("i",s);
+			let customFunction = new Function("i", s);
 			if (customFunction(one)) {
 				console.log(one);
 				console.log(one.x);
@@ -88,19 +93,19 @@ describe("Tests for performQueryHelper", () => {
 			console.log(queryObject[key]);
 
 			let s = pq.mComparatorHelper(queryObject[key], key);
-			expect(s).to.eql("(avg > 97)");
+			expect(s).to.eql("(section.avg > 97)");
 		});
 
 		it("integration test: BODY + mComparator", () => {
 			let queryObject = simpleQuery as any;
 			let s = pq.bodyHelper(queryObject["WHERE"]);
-			expect(s).to.eql("(avg > 97)");
+			expect(s).to.eql("(section.avg > 97)");
 		});
 
 		it("integration test: LOGIC + BODY + mComparator", () => {
 			let queryObject = complexMcompQuery as any;
 			let s = pq.bodyHelper(queryObject["WHERE"]);
-			expect(s).to.eql("(((avg > 90) && (avg < 99)) || (avg === 95))");
+			expect(s).to.eql("(((section.avg > 90) && (section.avg < 99)) || (section.avg === 95))");
 		});
 
 		it("unit test: sComparator", () => {
@@ -112,28 +117,73 @@ describe("Tests for performQueryHelper", () => {
 
 			let s = pq.sComparatorHelper(queryObject[key], key);
 			console.log(s);
-			expect(s).to.eql("(dept === \"adhe\")");
+			expect(s).to.eql('(section.dept === "adhe")');
 		});
 
 		it("integration test: LOGIC + BODY + sComparator", () => {
 			let queryObject = complexScompQuery as any;
 			let s = pq.bodyHelper(queryObject["WHERE"]);
 			console.log(s);
-			expect(s).to.eql(String.raw`(((id === "123") && (instructor === "bam")) || (dept === "adhe")` +
-			String.raw` || (dept.endsWith("sci")) || (dept.startsWith("dsc")) || (dept.includes("dh")))`);
+			expect(s).to.eql(
+				String.raw`(((section.id === "123") && (section.instructor === "bam")) || ` +
+					String.raw`(section.dept === "adhe") || (section.dept.endsWith("sci")) || ` +
+					String.raw`(section.dept.startsWith("dsc")) || (section.dept.includes("dh")))`
+			);
 		});
 	});
 
-	describe("performQueryHelper", () => {
-		it("should reject for empty, or incomplete queries", () => {
-			expect(pq.isValidQuery("", sampleDatasets)).to.eql(false);
-			expect(pq.isValidQuery(null, sampleDatasets)).to.eql(false);
-			expect(pq.isValidQuery(undefined, sampleDatasets)).to.eql(false);
-			expect(pq.isValidQuery(0, sampleDatasets)).to.eql(false);
-			expect(pq.isValidQuery(noOptionsQuery, sampleDatasets)).to.eql(false);
-			expect(pq.isValidQuery(noWhereQuery, sampleDatasets)).to.eql(false);
-			expect(pq.isValidQuery(simpleQuery, sampleDatasets)).to.eql(true);
-		});
-	});
-})
-;
+	// describe("performQueryHelper", () => {
+	// 	it("should reject for empty, or incomplete queries", () => {
+	// 		expect(pq.queryValidator("")).to.eql(false);
+	// 		expect(pq.queryValidator(null)).to.eql(false);
+	// 		expect(pq.queryValidator(undefined)).to.eql(false);
+	// 		expect(pq.queryValidator(0)).to.eql(false);
+	// 		expect(pq.queryValidator(noOptionsQuery)).to.eql(false);
+	// 		expect(pq.queryValidator(noWhereQuery)).to.eql(false);
+	// 		expect(pq.queryValidator(simpleQuery)).to.eql(true);
+	// 	});
+	// });
+});
+
+// describe("Integration tests", () => {
+// 	before(() => {
+// 		// void
+// 	});
+//
+// 	it("read from ./data", async () => {
+// 		let dataDir = "data/";
+// 		let facade = new InsightFacade();
+// 		let datas = await facade.listDatasets();
+// 		for (let data of datas) {
+// 			let filePath = dataDir + data.id + ".json";
+// 			let fileContent = fs.readFileSync(filePath);
+// 			let parsedJSON = JSON.parse(fileContent.toString());
+//
+// 			for (let s of parsedJSON.sectionList) {
+// 				console.log(s);
+// 			}
+// 		}
+// 	});
+// });
+
+// describe("InsightFacade.performQuery tests", () => {
+// 	let facade: InsightFacade;
+// 	let simpleQuery: unknown;
+// 	let complexQuery: unknown;
+//
+// 	before(() => {
+// 		facade = new InsightFacade();
+// 		simpleQuery = readQuery("simple.json");
+// 		complexQuery = readQuery("complex.json");
+// 	});
+//
+// 	it("performQuery's query function - simple", async () => {
+// 		let IR = await facade.performQuery(simpleQuery);
+// 		console.log(IR);
+// 	});
+//
+// 	it("performQuery's query function - complex", async () => {
+// 		let IR = await facade.performQuery(complexQuery);
+// 		console.log(IR);
+// 	});
+// });

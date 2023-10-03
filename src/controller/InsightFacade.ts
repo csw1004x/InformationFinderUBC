@@ -5,14 +5,14 @@ import {
 	InsightError,
 	InsightResult,
 	NotFoundError,
-	ResultTooLargeError
+	ResultTooLargeError,
 } from "./IInsightFacade";
 
 import JSZip from "jszip";
-import {Sections} from "../classes/Sections";
 import {SectionsList} from "../classes/SectionsList";
 import * as fs from "fs-extra";
-import * as pq from "./performQueryHelper"; // importing performQueryHelper
+import * as pq from "./performQueryHelper";
+import * as ds from "./datasetHelper";
 
 /**
  * This is the main programmatic entry point for the project.
@@ -20,7 +20,6 @@ import * as pq from "./performQueryHelper"; // importing performQueryHelper
  *
  */
 export default class InsightFacade implements IInsightFacade {
-
 	constructor() {
 		// console.log("InsightFacadeImpl::init()");
 	}
@@ -28,13 +27,13 @@ export default class InsightFacade implements IInsightFacade {
 	public allID: string[] = [];
 
 	public async addDataset(id: string, content: string, kind: InsightDatasetKind): Promise<string[]> {
-		try{
-			if (!this.isIDKindValid(id, kind)){
+		try {
+			if (!ds.isIDKindValid(id, kind)) {
 				return Promise.reject(new InsightError());
 			}
 
 			// check if id is already in allID
-			if (this.allID.includes(id)){
+			if (this.allID.includes(id)) {
 				return Promise.reject(new InsightError());
 			}
 
@@ -50,7 +49,7 @@ export default class InsightFacade implements IInsightFacade {
 			}
 
 			// Check if there are any files in the courses folder
-			const files = coursesFolder.file(/.+/);	// regex to match any file name
+			const files = coursesFolder.file(/.+/); // regex to match any file name
 			if (!files || files.length === 0) {
 				return Promise.reject(new InsightError());
 			}
@@ -60,7 +59,7 @@ export default class InsightFacade implements IInsightFacade {
 				const fileContent = await file.async("text");
 				try {
 					const fileJson = JSON.parse(fileContent);
-					this.isDataValid(fileJson, dataList);
+					ds.isDataValid(fileJson, dataList);
 				} catch (err) {
 					// skip
 				}
@@ -68,128 +67,42 @@ export default class InsightFacade implements IInsightFacade {
 
 			await Promise.all(fileContentsPromises);
 
-			if (dataList.getNumberOfSections() === 0 ){
+			if (dataList.getNumberOfSections() === 0) {
 				return Promise.reject(new InsightError());
 			}
 			this.allID.push(id);
 			// print allId
 			// console.log(this.allID);
-			await this.writeDataToDisk(dataList, id);
-
-		} catch (err){
+			await ds.writeDataToDisk(dataList, id);
+		} catch (err) {
 			return Promise.reject(new InsightError());
 		}
-		return this.allID;  // stub
-	}
-
-	private async writeDataToDisk(dataList: SectionsList, id: string): Promise<void> {
-		const filename = id + ".json";
-		const filePath = "./data/" + filename;
-
-		try {
-			// Convert the class instance to JSON string
-			const jsonString = JSON.stringify(dataList);
-
-			await fs.ensureDir("./data");
-			// Write the JSON string to the file
-			await fs.writeFileSync(filePath, jsonString);
-
-			// console.log(`Class instance has been written to ${filePath}`);
-		} catch (err) {
-			// console.error(`Error writing class instance to ${filePath}: ${err}`);
-		}
-
-	}
-
-	// A function named isDataValid that returns a boolean.
-	// The function should take a JSON parsed object as an argument.
-	// The function should return true if the JSON object contains all the fields we need.
-	// The fields are: uuid, id, title, instructor, audit, year, pass, fail, avg, dept
-	// If any field is missing, return false. Otherwise, return true.
-	// all fields are in the result key.
-	private isDataValid(jsonData: any, dataList: SectionsList): void {
-		const requiredFields = ["id", "Course", "Title", "Professor",
-			"Audit", "Year", "Pass", "Fail", "Avg", "Subject"];
-
-		let isDataValid: boolean = true;
-		for (let index in jsonData.result){
-			isDataValid = true;
-			for (const field of requiredFields) {
-				if (!Object.prototype.hasOwnProperty.call(jsonData.result[index],field)) {
-					isDataValid = false;
-				}
-			}
-			if (isDataValid) {
-				// insert data
-				this.insertDataIntoSectionsList(jsonData.result[index], dataList);
-				// console.log(jsonData.result[index]);
-			}
-		}
-	}
-
-	private insertDataIntoSectionsList(jsonData: any, datalist: SectionsList): void {
-		let sectionUUID: string = jsonData["id"].toString();
-		let sectionID: string = jsonData["Course"].toString();
-		let sectionTitle: string = jsonData["Title"].toString();
-		let sectionInstructor: string = jsonData["Professor"].toString();
-		let sectionDept: string = jsonData["Subject"].toString();
-
-		let tmp: string = jsonData["Section"].toString();
-		let sectionYear: number;
-		if (tmp === "overall"){
-			sectionYear = 1900;
-		} else {
-			sectionYear = Number(jsonData["Year"]);
-		}
-
-		let sectionAvg: number = Number(jsonData["Avg"]);
-		let sectionPass: number = Number(jsonData["Pass"]);
-		let sectionFail: number = Number(jsonData["Fail"]);
-		let sectionAudit: number = Number(jsonData["Audit"]);
-
-		const section = new Sections(sectionUUID, sectionID, sectionTitle, sectionInstructor,
-			sectionDept, sectionYear, sectionAvg, sectionPass, sectionFail, sectionAudit);
-
-		// section.printALlFields();
-
-		datalist.addSection(section);
-	}
-
-	private isIDKindValid(id: string,  kind: InsightDatasetKind): boolean {
-		// When id is invalid
-		// catch 2+ white spaces
-		if (id.includes("_") || id === " " || id.length === 0 ||
-			id === "\t" || id === "\n" || id === "\r" || id === "\f" || id === "\v") {
-			return false;
-		}
-
-		// When kind is not sections
-		return kind === InsightDatasetKind.Sections;
-
-
+		return this.allID; // stub
 	}
 
 	public removeDataset(id: string): Promise<string> {
 		// When id is invalid
-		if (id.includes("_") || id === " " || id.length === 0 ||
-			id === "\t" || id === "\n" || id === "\r" || id === "\f" || id === "\v") {
+		if (
+			id.includes("_") ||
+			id === " " ||
+			id.length === 0 ||
+			id === "\t" ||
+			id === "\n" ||
+			id === "\r" ||
+			id === "\f" ||
+			id === "\v"
+		) {
 			return Promise.reject(new InsightError());
 		}
 
 		// When id is not in allID
-		if (!this.allID.includes(id)){
+		if (!this.allID.includes(id)) {
 			return Promise.reject(new NotFoundError());
 		}
 
 		const filename = id + ".json";
 		const filePath = "./data/" + filename;
-		fs.remove(filePath)
-			.then(() => {
-				// console.log('File deleted successfully');
-			})
-			.catch((err) => {
-				// console.error(`Error deleting file: ${err}`);
-			});
+		fs.remove(filePath).then().catch();
 
 		return Promise.resolve(id);
 	}
@@ -222,7 +135,6 @@ export default class InsightFacade implements IInsightFacade {
 
 				// Check if numRows is greater than 0 before pushing to the datasetList
 				if (numRows > 0) {
-
 					datasetList.push({id, kind, numRows});
 				}
 			});
@@ -230,7 +142,7 @@ export default class InsightFacade implements IInsightFacade {
 			// Wait for all file promises to resolve
 			await Promise.all(filePromises);
 		} catch (error) {
-			// dont need to handle for list
+			// don't need to handle for list
 		}
 		return Promise.resolve(datasetList);
 	}
@@ -240,49 +152,52 @@ export default class InsightFacade implements IInsightFacade {
 	 * @return Promise <InsightResult[]>
 	 */
 	public async performQuery(query: unknown): Promise<InsightResult[]> {
-		// Instruction:
-		// Take in: JSON query
-		// Parse: JSON query
-		// Validate: JSON query (syntactically / semantically)
+		try {
+			// validate query body & initiate necessary variables
+			pq.queryValidator(query);
+			let knownQuery = query as any;
+			let ifCondition: string = "return " + pq.bodyHelper(knownQuery["WHERE"]);
+			let queryMatches = new Function("section", ifCondition);
+			let idString: string = pq.getID(knownQuery["WHERE"]);
 
-		// Return:
-		// Promise to fulfill with array of results
+			// validate options and columns & initiate necessary variables
+			pq.optionsValidator(knownQuery["OPTIONS"]);
+			pq.columnsValidator(knownQuery["OPTIONS"]["COLUMNS"], idString);
+			let parsedJSON = await pq.getSections(idString);
+			let passedList: InsightResult[] = [];
 
-		// Reject:
-		// if a query is too large -> ResultTooLargeError
-		let datasets = await this.listDatasets();
-		if (!pq.isValidQuery(query, datasets)) {
-			return Promise.reject(InsightError);
-		}
+			// for each section, if it matches query, create InsightResult and add to list
+			for (let section of parsedJSON.sectionList) {
+				if (queryMatches(section)) {
+					let passedSection: InsightResult = {};
+					for (let col of knownQuery["OPTIONS"]["COLUMNS"]) {
+						let field = col.split("_")[1];
+						passedSection[col] = section[field];
+					}
+					passedList.push(passedSection);
+				}
 
-		// confirmed to have the basic components of a valid query.
-		let knownQuery = query as any;
-
-		// query.WHERE and its related variables
-		let ifString: string = pq.bodyHelper(knownQuery["WHERE"]);
-		let sectionInQuery = new Function("section", ifString);
-		let sectionList: SectionsList = new SectionsList("id", InsightDatasetKind.Sections);
-
-		// query.OPTIONS and its related variables
-		let attributesString: string = pq.attributesHelper(knownQuery["OPTIONS"]);
-		let orderString: string = pq.orderHelper(knownQuery["OPTIONS"]);
-
-		// list to add successful query then sort
-		let passedList = [];
-		for (let section of sectionList.getSectionList) {
-
-			if (sectionInQuery(section)) {
-				// TODO: consider using the attribute here
-				// 		 and even sorting for each push
-				//		 i.e. could be pushing to priorityQueue
-				passedList.push(section);
+				if (passedList.length > 5000) {
+					return Promise.reject(new ResultTooLargeError());
+				}
 			}
 
-			if (passedList.length > 5000) {
-				return Promise.reject(ResultTooLargeError);
-			}
-		}
+			// sort query results
+			let orderColumn = knownQuery["OPTIONS"]["ORDER"];
+			if (pq.orderValidator(orderColumn, idString)) {
+				let field = knownQuery["OPTIONS"]["ORDER"].split("_")[1];
 
-		return Promise.reject(new InsightError());
+				if (["avg", "pass", "fail", "audit", "year"].includes(field)) {
+					passedList.sort((a: any, b: any) => a[orderColumn] - b[orderColumn]);
+				} else if (["dept", "id", "instructor", "title", "uuid"].includes(field)) {
+					passedList.sort((a: any, b: any) => a[orderColumn].localeCompare(b[orderColumn]));
+				} else {
+					return Promise.reject(new InsightError());
+				}
+			}
+			return Promise.resolve(passedList);
+		} catch (error) {
+			return Promise.reject(new InsightError());
+		}
 	}
 }

@@ -6,7 +6,7 @@ export class SectionsList {
 	private id: string;
 	private kind: InsightDatasetKind;
 
-	constructor(id: string, kind: InsightDatasetKind){
+	constructor(id: string, kind: InsightDatasetKind) {
 		this.id = id;
 		this.kind = kind;
 
@@ -16,15 +16,15 @@ export class SectionsList {
 		this.sectionList = [];
 	}
 
-	public get getID(){
+	public get getID() {
 		return this.id;
 	}
 
-	public get getKind(){
+	public get getKind() {
 		return this.kind;
 	}
 
-	public get getSectionList(){
+	public get getSectionList() {
 		return this.sectionList;
 	}
 
@@ -41,7 +41,7 @@ export class SectionsList {
 	// Write a function where it prints all the sections in the sectionList using printAllFields()
 	// using for of loop
 	public printAllSections(): void {
-		for (const section of this.sectionList){
+		for (const section of this.sectionList) {
 			section.printALlFields();
 		}
 	}

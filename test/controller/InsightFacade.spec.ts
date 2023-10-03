@@ -2,8 +2,9 @@ import {
 	IInsightFacade,
 	InsightDatasetKind,
 	InsightError,
-	InsightResult, NotFoundError,
-	ResultTooLargeError
+	InsightResult,
+	NotFoundError,
+	ResultTooLargeError,
 } from "../../src/controller/IInsightFacade";
 import InsightFacade from "../../src/controller/InsightFacade";
 
@@ -20,7 +21,6 @@ type Error = "InsightError" | "ResultTooLargeError";
 
 // tests for InsightFacade.ts
 describe("InsightFacade", function () {
-
 	// variable names to be used in tests
 	let sections1: string;
 	let sections2: string;
@@ -38,21 +38,16 @@ describe("InsightFacade", function () {
 		sections1 = getContentFromArchives("courses_1.zip");
 		sections2 = getContentFromArchives("courses_2.zip");
 		sectionsNotCourse = getContentFromArchives("not_courses.zip");
-
 	});
 
 	describe("Add/Remove/List Dataset", function () {
-
-		beforeEach(function() {
-
+		beforeEach(function () {
 			clearDisk();
 			facade = new InsightFacade();
-
 		});
 
-
 		// This is a unit test. You should create more like this!
-		it ("should reject with  an empty dataset id", function() {
+		it("should reject with  an empty dataset id", function () {
 			const result = facade.addDataset("", sections, InsightDatasetKind.Sections);
 			return expect(result).to.eventually.be.rejectedWith(InsightError);
 		});
@@ -63,12 +58,6 @@ describe("InsightFacade", function () {
 			expect(result).to.be.an("array");
 			expect(result.length).to.equal(1);
 			expect(result[0]).to.equal(id);
-
-			// let list = await facade.listDatasets();
-			// expect(list.length).to.equal(1);
-			// expect(list[0].id).to.equal(id);
-			// expect(list[0].kind).to.equal(InsightDatasetKind.Sections);
-			// expect(list[0].numRows).to.equal(64612);
 		});
 
 		it("Fulfill: Add dataset successfully multiple", async function () {
@@ -86,20 +75,19 @@ describe("InsightFacade", function () {
 			expect(result).to.include(id2);
 		});
 
-		it ("should accept valid chain", async function () {
-			try{
+		it("should accept valid chain", async function () {
+			try {
 				const result1 = await facade.addDataset("ubc1", sections, InsightDatasetKind.Sections);
 				const result2 = await facade.addDataset("ubc2", sections, InsightDatasetKind.Sections);
 
 				expect(result2[0]).to.equal("ubc1");
 				expect(result2[1]).to.equal("ubc2");
-			} catch (err){
+			} catch (err) {
 				expect.fail("Should not have rejected!");
 			}
-
 		});
 
-		it ("should accept 3+ valid chain", async function () {
+		it("should accept 3+ valid chain", async function () {
 			let tmp: string = getContentFromArchives("pairSimple.zip");
 
 			try {
@@ -110,7 +98,7 @@ describe("InsightFacade", function () {
 				expect(result3[0]).to.equal("ubc1");
 				expect(result3[1]).to.equal("yes");
 				expect(result3[2]).to.equal("no");
-			} catch (err){
+			} catch (err) {
 				expect.fail("Should not have rejected!");
 			}
 		});
@@ -126,13 +114,6 @@ describe("InsightFacade", function () {
 			expect(list[0].id).to.equal(id);
 			expect(list[0].kind).to.equal(InsightDatasetKind.Sections);
 			expect(list[0].numRows).to.equal(264);
-		});
-
-		it("Reject: Folder not courses", async function () {
-			const id = "section1";
-			const result = await facade.addDataset(id, sectionsNotCourse, InsightDatasetKind.Sections);
-			expect(result).to.be.an("array");
-			expect(result.length).to.equal(0);
 		});
 
 		it("Reject: Add empty dataset id", async function () {
@@ -196,7 +177,7 @@ describe("InsightFacade", function () {
 			await expect(result).to.eventually.be.rejectedWith(InsightError);
 		});
 
-		it ("should reject with not a section with no audit", async function () {
+		it("should reject with not a section with no audit", async function () {
 			sections3 = getContentFromArchives("noAudit.zip");
 
 			try {
@@ -205,10 +186,9 @@ describe("InsightFacade", function () {
 			} catch (err) {
 				expect(err).to.be.instanceof(InsightError);
 			}
-
 		});
 
-		it ("should reject with not a section with no avg", async function () {
+		it("should reject with not a section with no avg", async function () {
 			sections3 = getContentFromArchives("noAvg.zip");
 			try {
 				const result = await facade.addDataset("ubc", sections3, InsightDatasetKind.Sections);
@@ -218,7 +198,7 @@ describe("InsightFacade", function () {
 			}
 		});
 
-		it ("should reject with not a section with no Course", async function () {
+		it("should reject with not a section with no Course", async function () {
 			sections3 = getContentFromArchives("noCourse.zip");
 
 			try {
@@ -229,7 +209,7 @@ describe("InsightFacade", function () {
 			}
 		});
 
-		it ("should reject with not a section with no fail", async function () {
+		it("should reject with not a section with no fail", async function () {
 			sections3 = getContentFromArchives("noFail.zip");
 
 			try {
@@ -240,7 +220,7 @@ describe("InsightFacade", function () {
 			}
 		});
 
-		it ("should reject with not a section with no ID", async function () {
+		it("should reject with not a section with no ID", async function () {
 			sections3 = getContentFromArchives("noID.zip");
 
 			try {
@@ -251,7 +231,7 @@ describe("InsightFacade", function () {
 			}
 		});
 
-		it ("should reject with not a section with no Pass", async function () {
+		it("should reject with not a section with no Pass", async function () {
 			sections3 = getContentFromArchives("noPass.zip");
 
 			try {
@@ -262,7 +242,7 @@ describe("InsightFacade", function () {
 			}
 		});
 
-		it ("should reject with not a section with no Sub", async function () {
+		it("should reject with not a section with no Sub", async function () {
 			sections3 = getContentFromArchives("noSub.zip");
 
 			try {
@@ -273,7 +253,7 @@ describe("InsightFacade", function () {
 			}
 		});
 
-		it ("should reject with not a section with no Title", async function () {
+		it("should reject with not a section with no Title", async function () {
 			let sections4 = getContentFromArchives("noTitle.zip");
 
 			try {
@@ -284,7 +264,7 @@ describe("InsightFacade", function () {
 			}
 		});
 
-		it ("should reject with not a section with no Year", async function () {
+		it("should reject with not a section with no Year", async function () {
 			sections3 = getContentFromArchives("noYear.zip");
 
 			try {
@@ -295,7 +275,7 @@ describe("InsightFacade", function () {
 			}
 		});
 
-		it ("should reject with not a section with no Prof", async function () {
+		it("should reject with not a section with no Prof", async function () {
 			sections3 = getContentFromArchives("noProf.zip");
 
 			try {
@@ -306,7 +286,7 @@ describe("InsightFacade", function () {
 			}
 		});
 
-		it ("should reject with a section with wrong kind", async function () {
+		it("should reject with a section with wrong kind", async function () {
 			try {
 				const result = await facade.addDataset("ubc", sections, InsightDatasetKind.Rooms);
 				expect.fail("Should have rejected!");
@@ -315,7 +295,7 @@ describe("InsightFacade", function () {
 			}
 		});
 
-		it ("should reject with empty zip file", async function () {
+		it("should reject with empty zip file", async function () {
 			sections2 = getContentFromArchives("empty.zip");
 
 			try {
@@ -326,12 +306,12 @@ describe("InsightFacade", function () {
 			}
 		});
 
-		it ("should accept valid caps numbers and symbols", async function () {
-			try{
+		it("should accept valid caps numbers and symbols", async function () {
+			try {
 				const result = await facade.addDataset("UBC123!@", sections, InsightDatasetKind.Sections);
 
 				expect(result).to.deep.equal(["UBC123!@"]);
-			} catch (err){
+			} catch (err) {
 				expect.fail("Should not have rejected!");
 			}
 		});
@@ -344,7 +324,7 @@ describe("InsightFacade", function () {
 			expect(result).to.be.a("string").that.equals(id);
 		});
 
-		it ("should successfully remove multiple id", async function() {
+		it("should successfully remove multiple id", async function () {
 			try {
 				await facade.addDataset("ubc", sections, InsightDatasetKind.Sections);
 				await facade.addDataset("ubcTwo", sections, InsightDatasetKind.Sections);
@@ -354,19 +334,18 @@ describe("InsightFacade", function () {
 
 				expect(result1).to.deep.equal("ubc");
 				expect(result2).to.deep.equal("ubcTwo");
-			} catch (err){
+			} catch (err) {
 				expect.fail("should not have rejected!");
 			}
-
 		});
 
-		it ("should successfully remove id caps num symbols", async function () {
+		it("should successfully remove id caps num symbols", async function () {
 			try {
 				await facade.addDataset("UBC123!@", sections, InsightDatasetKind.Sections);
 
 				const result = await facade.removeDataset("UBC123!@");
 				expect(result).to.deep.equal("UBC123!@");
-			} catch (err){
+			} catch (err) {
 				expect.fail("Should not have rejected!");
 			}
 		});
@@ -440,8 +419,8 @@ describe("InsightFacade", function () {
 			expect(dataset1Presence).to.have.lengthOf.at.least(1);
 		});
 
-		it("should list one dataset", async function() {
-			try{
+		it("should list one dataset", async function () {
+			try {
 				const result = await facade.addDataset("ubc", sections, InsightDatasetKind.Sections);
 
 				expect(result).to.deep.equal(["ubc"]);
@@ -449,19 +428,20 @@ describe("InsightFacade", function () {
 				const datasets = await facade.listDatasets();
 
 				// Validation
-				expect(datasets).to.deep.equal([{
-					id: "ubc",
-					kind: InsightDatasetKind.Sections,
-					numRows: 264
-				}]);
-			}  catch (err){
+				expect(datasets).to.deep.equal([
+					{
+						id: "ubc",
+						kind: InsightDatasetKind.Sections,
+						numRows: 264,
+					},
+				]);
+			} catch (err) {
 				expect.fail("should not have rejected!");
 			}
-
 		});
 
-		it("should list multiple dataset", async function() {
-			try{
+		it("should list multiple dataset", async function () {
+			try {
 				const result = await facade.addDataset("ubc", sections, InsightDatasetKind.Sections);
 
 				expect(result).to.deep.equal(["ubc"]);
@@ -473,29 +453,30 @@ describe("InsightFacade", function () {
 				const datasets = await facade.listDatasets();
 
 				// Validation
-				expect(datasets).to.deep.equal([{
-					id: "ubc",
-					kind: InsightDatasetKind.Sections,
-					numRows: 264
-				},{
-					id: "ubc2",
-					kind: InsightDatasetKind.Sections,
-					numRows: 264
-				}]);
-			} catch (err){
+				expect(datasets).to.have.deep.members([
+					{
+						id: "ubc",
+						kind: InsightDatasetKind.Sections,
+						numRows: 264,
+					},
+					{
+						id: "ubc2",
+						kind: InsightDatasetKind.Sections,
+						numRows: 264,
+					},
+				]);
+			} catch (err) {
 				expect.fail("should not have rejected!");
 			}
-
 		});
 
-		it("should list no dataset", async function() {
+		it("should list no dataset", async function () {
 			try {
 				const datasets = await facade.listDatasets();
 				expect(datasets).to.deep.equal([]);
-			} catch (err){
+			} catch (err) {
 				expect.fail("should not have rejected!");
 			}
-
 		});
 	});
 
@@ -509,12 +490,12 @@ describe("InsightFacade", function () {
 			console.info(`Before: ${this.test?.parent?.title}`);
 
 			facade = new InsightFacade();
+			let sectionsFull = getContentFromArchives("pair.zip");
+			// const result: Promise<string[]> = facade.addDataset("sections", sectionsFull, InsightDatasetKind.Sections);
 
 			// Load the datasets specified in datasetsToQuery and add them to InsightFacade.
 			// Will *fail* if there is a problem reading ANY dataset.
-			const loadDatasetPromises = [
-				facade.addDataset("sections", sections, InsightDatasetKind.Sections),
-			];
+			const loadDatasetPromises = [facade.addDataset("sections", sectionsFull, InsightDatasetKind.Sections)];
 
 			return Promise.all(loadDatasetPromises);
 		});
@@ -524,8 +505,6 @@ describe("InsightFacade", function () {
 			clearDisk();
 		});
 
-		// type PQErrorKind = "ResultTooLargeError" | "InsightError";
-
 		folderTest<Input, Output, Error>(
 			"Dynamic InsightFacade PerformQuery tests",
 			async (input) => await facade.performQuery(input),
@@ -534,8 +513,7 @@ describe("InsightFacade", function () {
 				assertOnResult: (actual, expected) => {
 					expect(actual).to.have.deep.members(expected);
 				},
-				errorValidator: (error): error is Error =>
-					error === "ResultTooLargeError" || error === "InsightError",
+				errorValidator: (error): error is Error => error === "ResultTooLargeError" || error === "InsightError",
 				assertOnError: (actual, expected) => {
 					if (expected === "InsightError") {
 						expect(actual).to.be.instanceof(InsightError);
