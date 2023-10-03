@@ -2,8 +2,9 @@ import {
 	IInsightFacade,
 	InsightDatasetKind,
 	InsightError,
-	InsightResult, NotFoundError,
-	ResultTooLargeError
+	InsightResult,
+	NotFoundError,
+	ResultTooLargeError,
 } from "../../src/controller/IInsightFacade";
 import InsightFacade from "../../src/controller/InsightFacade";
 
@@ -20,7 +21,6 @@ type Error = "InsightError" | "ResultTooLargeError";
 
 // tests for InsightFacade.ts
 describe("InsightFacade", function () {
-
 	// variable names to be used in tests
 	let sections1: string;
 	let sections2: string;
@@ -34,23 +34,20 @@ describe("InsightFacade", function () {
 
 	before(function () {
 		// This block runs once and loads the datasets.
-		sections = getContentFromArchives("pairSimple.zip");
+		sections = getContentFromArchives("pair.zip");
 
 		// Just in case there is anything hanging around from a previous run of the test suite
 		clearDisk();
 	});
 
 	describe("Add/Remove/List Dataset", function () {
-
 		beforeEach(function () {
 			clearDisk();
 			facade = new InsightFacade();
 		});
 
 		it("Test zip file", async function () {
-			const result: Promise<string[]> = facade.addDataset("ubc", sections, InsightDatasetKind.Sections);
+			const result: Promise<string[]> = facade.addDataset("sections", sections, InsightDatasetKind.Sections);
 		});
-
 	});
-
 });

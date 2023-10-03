@@ -10,9 +10,18 @@ export class Sections {
 	private fail: number;
 	private audit: number;
 
-	constructor(sectionUUID: string, sectionID: string, sectionTitle: string,
-		sectionInstructor: string, sectionDept: string, sectionYear: number,
-		sectionAvg: number, sectionPass: number, sectionFail: number, sectionAudit: number) {
+	constructor(
+		sectionUUID: string,
+		sectionID: string,
+		sectionTitle: string,
+		sectionInstructor: string,
+		sectionDept: string,
+		sectionYear: number,
+		sectionAvg: number,
+		sectionPass: number,
+		sectionFail: number,
+		sectionAudit: number
+	) {
 		this.uuid = sectionUUID;
 		this.id = sectionID;
 		this.title = sectionTitle;
@@ -25,61 +34,79 @@ export class Sections {
 		this.audit = sectionAudit;
 	}
 
-	public get getSectionUUID(){
+	public get getSectionUUID() {
 		return this.uuid;
 	}
 
-	public get getSectionID(){
+	public get getSectionID() {
 		return this.id;
 	}
 
-	public get getSectionTitle(){
+	public get getSectionTitle() {
 		return this.title;
 	}
 
-	public get getSectionInstructor(){
+	public get getSectionInstructor() {
 		return this.instructor;
 	}
 
-	public get getSectionDept(){
+	public get getSectionDept() {
 		return this.dept;
 	}
 
-	public get getSectionYear(){
+	public get getSectionYear() {
 		return this.year;
 	}
 
-	public get getSectionAvg(){
+	public get getSectionAvg() {
 		return this.avg;
 	}
 
-	public get getSectionPass(){
+	public get getSectionPass() {
 		return this.pass;
 	}
 
-	public get getSectionFail(){
+	public get getSectionFail() {
 		return this.fail;
 	}
 
-	public get getSectionAudit(){
+	public get getSectionAudit() {
 		return this.audit;
 	}
 
-
-	public printALlFields(){
+	public printALlFields() {
 		// Print all the fields of the section in a readable manner
-		let tmp: string = "sectionUUID: " + this.uuid + "\n" +
-			"sectionID: " + this.id + "\n" +
-			"sectionTitle: " + this.title + "\n" +
-			"sectionInstructor: " + this.instructor + "\n" +
-			"sectionDept: " + this.dept + "\n" +
-			"sectionYear: " + this.year + "\n" +
-			"sectionAvg: " + this.avg + "\n" +
-			"sectionPass: " + this.pass + "\n" +
-			"sectionFail: " + this.fail + "\n" +
-			"sectionAudit: " + this.audit + "\n";
+		let tmp: string =
+			"sectionUUID: " +
+			this.uuid +
+			"\n" +
+			"sectionID: " +
+			this.id +
+			"\n" +
+			"sectionTitle: " +
+			this.title +
+			"\n" +
+			"sectionInstructor: " +
+			this.instructor +
+			"\n" +
+			"sectionDept: " +
+			this.dept +
+			"\n" +
+			"sectionYear: " +
+			this.year +
+			"\n" +
+			"sectionAvg: " +
+			this.avg +
+			"\n" +
+			"sectionPass: " +
+			this.pass +
+			"\n" +
+			"sectionFail: " +
+			this.fail +
+			"\n" +
+			"sectionAudit: " +
+			this.audit +
+			"\n";
 		console.log(tmp);
 	}
-
-
 }
