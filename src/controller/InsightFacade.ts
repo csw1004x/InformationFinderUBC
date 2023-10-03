@@ -50,9 +50,6 @@ export default class InsightFacade implements IInsightFacade {
 
 			// Check if there are any files in the courses folder
 			const files = coursesFolder.file(/.+/);	// regex to match any file name
-			if (!files || files.length === 0) {
-				return Promise.reject(new InsightError());
-			}
 
 			// Use Promise.all to process all files in parallel and store the results in an array
 			const fileContentsPromises = files.map(async (file) => {
@@ -190,6 +187,12 @@ export default class InsightFacade implements IInsightFacade {
 				// console.error(`Error deleting file: ${err}`);
 			});
 
+		// remove id from allID
+		const index = this.allID.indexOf(id);
+		if (index > -1) {
+			this.allID.splice(index, 1);
+		}
+
 		return Promise.resolve(id);
 	}
 
@@ -218,10 +221,9 @@ export default class InsightFacade implements IInsightFacade {
 				} catch (error) {
 					// Handle errors here, or skip as needed
 				}
-
+				// console.log(id, kind, numRows);
 				// Check if numRows is greater than 0 before pushing to the datasetList
 				if (numRows > 0) {
-
 					datasetList.push({id, kind, numRows});
 				}
 			});

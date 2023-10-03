@@ -50,7 +50,6 @@ describe("InsightFacade", function () {
 
 		});
 
-
 		// This is a unit test. You should create more like this!
 		it ("should reject with  an empty dataset id", function() {
 			const result = facade.addDataset("", sections, InsightDatasetKind.Sections);
@@ -64,11 +63,11 @@ describe("InsightFacade", function () {
 			expect(result.length).to.equal(1);
 			expect(result[0]).to.equal(id);
 
-			// let list = await facade.listDatasets();
-			// expect(list.length).to.equal(1);
-			// expect(list[0].id).to.equal(id);
-			// expect(list[0].kind).to.equal(InsightDatasetKind.Sections);
-			// expect(list[0].numRows).to.equal(64612);
+			let list = await facade.listDatasets();
+			expect(list.length).to.equal(1);
+			expect(list[0].id).to.equal(id);
+			expect(list[0].kind).to.equal(InsightDatasetKind.Sections);
+			expect(list[0].numRows).to.equal(264);
 		});
 
 		it("Fulfill: Add dataset successfully multiple", async function () {
@@ -84,6 +83,19 @@ describe("InsightFacade", function () {
 
 			expect(result).to.include(id1);
 			expect(result).to.include(id2);
+		});
+
+		it("Fulfill: Add dataset successfully multiple + remove", async function () {
+			const id1 = "section1";
+
+			let result;
+			await facade.addDataset(id1, sections1, InsightDatasetKind.Sections);
+
+			await facade.removeDataset(id1);
+
+			result = await facade.addDataset(id1, sections1, InsightDatasetKind.Sections);
+
+			expect(result).to.include(id1);
 		});
 
 		it ("should accept valid chain", async function () {
@@ -449,7 +461,7 @@ describe("InsightFacade", function () {
 				const datasets = await facade.listDatasets();
 
 				// Validation
-				expect(datasets).to.deep.equal([{
+				expect(datasets).to.have.deep.members([{
 					id: "ubc",
 					kind: InsightDatasetKind.Sections,
 					numRows: 264
@@ -473,7 +485,7 @@ describe("InsightFacade", function () {
 				const datasets = await facade.listDatasets();
 
 				// Validation
-				expect(datasets).to.deep.equal([{
+				expect(datasets).to.have.deep.members([{
 					id: "ubc",
 					kind: InsightDatasetKind.Sections,
 					numRows: 264
