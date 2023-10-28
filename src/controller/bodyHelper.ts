@@ -1,6 +1,5 @@
 import {InsightDataset, InsightError, InsightResult, ResultTooLargeError} from "./IInsightFacade";
 import * as fs from "fs-extra";
-import * as bd from "./bodyHelper";
 import InsightFacade from "./InsightFacade";
 
 export function bodyHelper(query: any): string {
