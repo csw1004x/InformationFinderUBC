@@ -13,6 +13,7 @@ import {SectionsList} from "../classes/SectionsList";
 import * as fs from "fs-extra";
 import * as pq from "./performQueryHelper";
 import * as ds from "./datasetHelper";
+import {filterWhere} from "./performQueryHelper";
 
 /**
  * This is the main programmatic entry point for the project.
@@ -163,31 +164,18 @@ export default class InsightFacade implements IInsightFacade {
 			// validate query body & initiate necessary variables
 			pq.queryValidator(query);
 			let knownQuery = query as any;
-			let ifCondition: string = "return " + pq.bodyHelper(knownQuery["WHERE"]);
-			let queryMatches = new Function("section", ifCondition);
 			let idString: string = pq.getID(knownQuery["WHERE"]);
 
-			// validate options and columns & initiate necessary variables
-			pq.optionsValidator(knownQuery["OPTIONS"]);
-			pq.columnsValidator(knownQuery["OPTIONS"]["COLUMNS"], idString);
+			// parsedJSON contains the JSONs that match idString
 			let parsedJSON = await pq.getSections(idString);
-			let passedList: InsightResult[] = [];
 
-			// for each section, if it matches query, create InsightResult and add to list
-			for (let section of parsedJSON.sectionList) {
-				if (queryMatches(section)) {
-					let passedSection: InsightResult = {};
-					for (let col of knownQuery["OPTIONS"]["COLUMNS"]) {
-						let field = col.split("_")[1];
-						passedSection[col] = section[field];
-					}
-					passedList.push(passedSection);
-				}
+			// filteredJSON contains the JSONs that passed WHERE
+			let whereFilteredJSON = pq.filterWhere(parsedJSON, knownQuery);
 
-				if (passedList.length > 5000) {
-					return Promise.reject(new ResultTooLargeError());
-				}
-			}
+			// transformedJSON
+
+			// passedList contains InsightResults that paased Options
+			let passedList = pq.filterOptions(whereFilteredJSON, knownQuery, idString);
 
 			// sort query results
 			let orderColumn = knownQuery["OPTIONS"]["ORDER"];
@@ -204,7 +192,11 @@ export default class InsightFacade implements IInsightFacade {
 			}
 			return Promise.resolve(passedList);
 		} catch (error) {
-			return Promise.reject(new InsightError());
+			if (error instanceof ResultTooLargeError) {
+				return Promise.reject(new ResultTooLargeError());
+			} else {
+				return Promise.reject(new InsightError());
+			}
 		}
 	}
 }
