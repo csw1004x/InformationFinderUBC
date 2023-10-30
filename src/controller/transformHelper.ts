@@ -31,7 +31,6 @@ export function applyHelper(group: any, knownQueryTransformationsApply: any): an
 	let appliedJSONGroup: any = {};
 	let observedRules: any = new Set();
 
-
 	for (let applyRule of knownQueryTransformationsApply) {
 		if (observedRules.has(Object.keys(applyRule)[0])) {
 			throw new InsightError();

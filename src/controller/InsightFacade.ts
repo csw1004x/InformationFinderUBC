@@ -253,7 +253,7 @@ export default class InsightFacade implements IInsightFacade {
 			let idString: string = pq.getID(knownQuery);
 			// console.log(2);
 			// parsedJSON: contains the JSONs that match idString
-			let parsedJSON = await pq.getSections(idString);
+			let parsedJSON = await pq.getJSON(idString);
 			// console.log(3);
 			// filteredJSON: contains the JSONs that passed WHERE
 			let whereFilteredJSON = pq.filterWhere(parsedJSON, knownQuery);

@@ -88,8 +88,8 @@ describe("InsightFacade", function () {
 			expect(result).to.include(id1);
 		});
 
-		it ("should accept valid chain", async function () {
-			try{
+		it("should accept valid chain", async function () {
+			try {
 				const result1 = await facade.addDataset("ubc1", sections, InsightDatasetKind.Sections);
 				const result2 = await facade.addDataset("ubc2", sections, InsightDatasetKind.Sections);
 
@@ -437,7 +437,7 @@ describe("InsightFacade", function () {
 					kind: InsightDatasetKind.Sections,
 					numRows: 264
 				}]);
-			}  catch (err){
+			} catch (err) {
 				expect.fail("should not have rejected!");
 			}
 		});
@@ -459,12 +459,12 @@ describe("InsightFacade", function () {
 					id: "ubc",
 					kind: InsightDatasetKind.Sections,
 					numRows: 264
-				},{
+				}, {
 					id: "ubc2",
 					kind: InsightDatasetKind.Sections,
 					numRows: 264
 				}]);
-			} catch (err){
+			} catch (err) {
 				expect.fail("should not have rejected!");
 			}
 		});
@@ -486,28 +486,31 @@ describe("InsightFacade", function () {
 	 */
 	describe("PerformQuery", () => {
 		before(async function () {
+			clearDisk();
 			console.info(`Before: ${this.test?.parent?.title}`);
 
 			facade = new InsightFacade();
 			let sectionsFull = getContentFromArchives("pair.zip");
+			let roomsFull = getContentFromArchives("campus.zip");
 			// const result: Promise<string[]> = facade.addDataset("sections", sectionsFull, InsightDatasetKind.Sections);
 
 			// Load the datasets specified in datasetsToQuery and add them to InsightFacade.
 			// Will *fail* if there is a problem reading ANY dataset.
-			const loadDatasetPromises = [facade.addDataset("sections", sectionsFull, InsightDatasetKind.Sections)];
+			const loadDatasetPromises = [
+				facade.addDataset("sections", sectionsFull, InsightDatasetKind.Sections)
+				, facade.addDataset("rooms", roomsFull, InsightDatasetKind.Rooms)];
 
 			return Promise.all(loadDatasetPromises);
 		});
 
 		after(function () {
 			console.info(`After: ${this.test?.parent?.title}`);
-			clearDisk();
 		});
 
 		folderTest<Input, Output, Error>(
 			"Dynamic InsightFacade PerformQuery tests",
 			async (input) => await facade.performQuery(input),
-			"./test/resources/queries2",
+			"./test/resources/queries_rooms",
 			{
 				assertOnResult: (actual, expected) => {
 					expect(actual).to.have.deep.members(expected);
@@ -525,6 +528,29 @@ describe("InsightFacade", function () {
 				},
 			}
 		);
+
+		folderTest<Input, Output, Error>(
+			"Dynamic InsightFacade PerformQuery tests",
+			async (input) => await facade.performQuery(input),
+			"./test/resources/queries_transformation",
+			{
+				assertOnResult: (actual, expected) => {
+					expect(actual).to.have.deep.members(expected);
+				},
+				errorValidator: (error): error is Error => error === "ResultTooLargeError" || error === "InsightError",
+				assertOnError: (actual, expected) => {
+					if (expected === "InsightError") {
+						expect(actual).to.be.instanceof(InsightError);
+					} else if (expected === "ResultTooLargeError") {
+						expect(actual).to.be.instanceof(ResultTooLargeError);
+					} else {
+						// this should be unreachable
+						expect.fail("UNEXPECTED ERROR");
+					}
+				},
+			}
+		);
+
 
 		folderTest<Input, Output, Error>(
 			"Dynamic InsightFacade PerformQuery tests",

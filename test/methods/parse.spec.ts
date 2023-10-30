@@ -162,7 +162,7 @@ describe("Tests for performQueryHelper", () => {
 		it("grouping", async () => {
 			let facade = new InsightFacade();
 			let datas = await facade.listDatasets();
-			let parsedJSON = await pq.getSections("sections");
+			let parsedJSON = await pq.getJSON("sections");
 			let filteredJSON = pq.filterWhere(parsedJSON, emptyWhereQuery);
 
 			let groupedJSON = filteredJSON.reduce((accumulator: any, element: any) => {
