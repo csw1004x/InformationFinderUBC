@@ -74,8 +74,10 @@ export default class InsightFacade implements IInsightFacade {
 
 			for (let building of buildingList.getBuildingList()) {
 				geoLocator(building, buildingList);
+				if (building.getLat() === 404 && building.getLon() === 404) {
+					buildingList.removeBuilding(building);
+				}
 			}
-
 
 			// go to the folder that contains the html files
 			const folder = zip.folder("campus/discover/buildings-and-classrooms");
@@ -217,7 +219,7 @@ export default class InsightFacade implements IInsightFacade {
 				} catch (error) {
 					// Handle errors here, or skip as needed
 				}
-				console.log(id, kind, numRows);
+				// console.log(id, kind, numRows);
 				// Check if numRows is greater than 0 before pushing to the datasetList
 				if (numRows > 0) {
 					datasetList.push({id, kind, numRows});

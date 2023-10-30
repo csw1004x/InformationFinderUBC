@@ -6,8 +6,9 @@ import {BuildingList} from "../classes/BuildingList";
 import JSZip from "jszip";
 import * as http from "http";
 import {parse} from "parse5";
+import {InsightError} from "./IInsightFacade";
 
-export function getRoom(document: any, building: Building, dataList: RoomsList){
+export function getRoom(document: any, building: Building, dataList: RoomsList) {
 	for (let child in document.childNodes) {
 		if (document.childNodes[child].nodeName === "tbody") {
 			findTRRoom(document.childNodes[child], building, dataList);
@@ -119,9 +120,8 @@ export function geoLocator(building: Building, buildingList: BuildingList){
 					// console.log("yes");
 					building.setLat(lat);
 					building.setLon(lon);
-
 				} catch (e) {
-					// console.error("Error:", e);
+					// console.error(e.message);
 				}
 			});
 		}).on("error", (e) => {
@@ -129,7 +129,7 @@ export function geoLocator(building: Building, buildingList: BuildingList){
 			building.setLon(404);
 		});
 	} catch (e) {
-		console.error("Error:", e);
+		// console.error(e.message);
 	}
 }
 
