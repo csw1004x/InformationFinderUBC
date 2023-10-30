@@ -4,6 +4,7 @@ import {RoomsList} from "../classes/RoomsList";
 import {Rooms} from "../classes/Rooms";
 import {BuildingList} from "../classes/BuildingList";
 import JSZip from "jszip";
+import * as http from "http";
 
 export function getRoom(document: any, building: Building, dataList: RoomsList){
 	for (let child in document.childNodes) {
@@ -146,21 +147,31 @@ export async function helper(files: JSZip.JSZipObject[], parser: any, buildingLi
 export function geoLocator(building: Building){
 	// url-encode the address
 	const encodedAddress = encodeURIComponent(building.getAddress());
-	console.log(encodedAddress);
 	// set up your Geocoding url
 	const geoUrl = "http://cs310.students.cs.ubc.ca:11316/api/v1/project_team200/" + encodedAddress;
 
-	// make a GET request to the url and store the result
-	fetch(geoUrl)
-		.then((res) => {
-			return res.json();
-		})
-		.then((json) => {
-			// console.log(json);
-			building.setLat(json.lat);
-			building.setLon(json.lon);
-		})
-		.catch((err) => {
-			console.log(err);
+	try{
+		http.get(geoUrl, (res) => {
+
+			res.setEncoding("utf8");
+			let rawData = "";
+			res.on("data", (chunk) => {
+				rawData += chunk;
+			}
+			);
+			res.on("end", () => {
+				const parsedData = JSON.parse(rawData);
+				// convert from parsed json data into number
+				const lat = Number(parsedData.lat);
+				const lon = Number(parsedData.lon);
+				building.setLat(lat);
+				building.setLon(lon);
+			});
+		}).on("error", (e) => {
+			building.setLat(404);
+			building.setLon(404);
 		});
+	} catch (e) {
+		console.error("Error:", e);
+	}
 }
