@@ -160,7 +160,6 @@ export function geoLocator(building: Building){
 			}
 			);
 			res.on("end", () => {
-
 				const parsedData = JSON.parse(rawData);
 				// convert from parsed json data into number
 				const lat = Number(parsedData.lat);
