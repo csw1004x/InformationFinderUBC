@@ -3,7 +3,7 @@ import * as fs from "fs-extra";
 import {SectionsList} from "../classes/SectionsList";
 import {Sections} from "../classes/Sections";
 
-export async function writeDataToDisk(dataList: SectionsList, id: string): Promise<void> {
+export async function writeDataToDisk(dataList: any, id: string): Promise<void> {
 	const filename = id + ".json";
 	const filePath = "./data/" + filename;
 
@@ -101,5 +101,5 @@ export function isIDKindValid(id: string, kind: InsightDatasetKind): boolean {
 	}
 
 	// When kind is not sections
-	return kind === InsightDatasetKind.Sections;
+	return (kind === InsightDatasetKind.Sections) || (kind === InsightDatasetKind.Rooms);
 }

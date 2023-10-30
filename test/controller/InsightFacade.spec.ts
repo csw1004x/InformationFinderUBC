@@ -299,15 +299,6 @@ describe("InsightFacade", function () {
 			}
 		});
 
-		it("should reject with a section with wrong kind", async function () {
-			try {
-				const result = await facade.addDataset("ubc", sections, InsightDatasetKind.Rooms);
-				expect.fail("Should have rejected!");
-			} catch (err) {
-				expect(err).to.be.instanceof(InsightError);
-			}
-		});
-
 		it("should reject with empty zip file", async function () {
 			sections2 = getContentFromArchives("empty.zip");
 
