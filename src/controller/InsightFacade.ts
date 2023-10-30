@@ -18,7 +18,7 @@ import {Building} from "../classes/Building";
 import {BuildingList} from "../classes/BuildingList";
 import {Rooms} from "../classes/Rooms";
 import {parse} from "parse5";
-import {findTBody, geoLocator, helper} from "./roomsHelper";
+import {findTable, findTBody, geoLocator, helper} from "./roomsHelper";
 
 /**
  * This is the main programmatic entry point for the project.
@@ -42,11 +42,15 @@ export default class InsightFacade implements IInsightFacade {
 			return Promise.reject(new InsightError());
 		}
 
-		if (kind === InsightDatasetKind.Sections) {
-			return this.addDatasetSection(id, content, kind);
-		}
-		if (kind === InsightDatasetKind.Rooms) {
-			return this.addDatasetRooms(id, content, kind);
+		try{
+			if (kind === InsightDatasetKind.Sections) {
+				return this.addDatasetSection(id, content, kind);
+			}
+			if (kind === InsightDatasetKind.Rooms) {
+				return this.addDatasetRooms(id, content, kind);
+			}
+		} catch (error) {
+			return Promise.reject(new InsightError());
 		}
 		return this.allID;
 	}
@@ -70,6 +74,11 @@ export default class InsightFacade implements IInsightFacade {
 			}
 
 			const document = parse(indexFile);
+
+			if (!findTable(document)) {
+				return Promise.reject(new InsightError());
+			}
+
 			findTBody(document, buildingList);
 
 			for (let building of buildingList.getBuildingList()) {
@@ -88,10 +97,6 @@ export default class InsightFacade implements IInsightFacade {
 
 			// go through each file in the folder
 			const files = folder.file(/.+/); // regex to match any file name
-			if (!files || files.length === 0) {
-				return Promise.reject(new InsightError());
-			}
-
 			await helper(files, buildingList, dataList);
 
 			if (dataList.getNumberOfSections() === 0) {

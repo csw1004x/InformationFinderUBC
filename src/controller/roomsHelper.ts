@@ -82,6 +82,22 @@ export function findTBody(document: any, buildingList: BuildingList): void {
 	}
 }
 
+// find if the table contains a tbody if not return false
+export function findTable(document: any): boolean {
+	if (document.nodeName === "tbody") {
+		return true;
+	}
+
+	for (let child in document.childNodes) {
+		if (findTable(document.childNodes[child])) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+
 // Iterate and print all the tr and td
 export function findTR(document: any, buildingList: BuildingList): void {
 	for (let child in document.childNodes) {
