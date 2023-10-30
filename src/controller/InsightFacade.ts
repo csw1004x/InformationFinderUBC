@@ -13,7 +13,13 @@ import {SectionsList} from "../classes/SectionsList";
 import * as fs from "fs-extra";
 import * as pq from "./performQueryHelper";
 import * as ds from "./datasetHelper";
-import {filterWhere} from "./performQueryHelper";
+import {RoomsList} from "../classes/RoomsList";
+import {Building} from "../classes/Building";
+import {BuildingList} from "../classes/BuildingList";
+import {Rooms} from "../classes/Rooms";
+import {parse} from "parse5";
+import {findTBody, getRoom, helper} from "./roomsHelper";
+
 
 /**
  * This is the main programmatic entry point for the project.
@@ -28,15 +34,75 @@ export default class InsightFacade implements IInsightFacade {
 	public allID: string[] = [];
 
 	public async addDataset(id: string, content: string, kind: InsightDatasetKind): Promise<string[]> {
+		if (!ds.isIDKindValid(id, kind)) {
+			return Promise.reject(new InsightError());
+		}
+
+		// check if id is already in allID
+		if (this.allID.includes(id)) {
+			return Promise.reject(new InsightError());
+		}
+
+		if (kind === InsightDatasetKind.Sections) {
+			return this.addDatasetSection(id, content, kind);
+		}
+		if (kind === InsightDatasetKind.Rooms) {
+			return this.addDatasetRooms(id, content, kind);
+		}
+		return this.allID;
+	}
+
+	public async addDatasetRooms(id: string, content: string, kind: InsightDatasetKind): Promise<string[]> {
 		try {
-			if (!ds.isIDKindValid(id, kind)) {
+			// Use parse5 to parse the HTML content
+			let buildingList: BuildingList = new BuildingList();
+			const zip = new JSZip();
+			let tmp = await zip.loadAsync(content, {base64: true});
+
+			const parser = require("parse5");
+			const dataList = new RoomsList(id, kind);
+
+			// check if zip contains index.htm
+			const indexFile = await tmp.files["index.htm"].async("string");
+
+			// console.log(indexFile);
+
+			if (!indexFile) {
 				return Promise.reject(new InsightError());
 			}
 
-			// check if id is already in allID
-			if (this.allID.includes(id)) {
+			const document = parser.parse(indexFile);
+			findTBody(document, buildingList);
+
+			// go to the folder that contains the html files
+			const folder = zip.folder("campus/discover/buildings-and-classrooms");
+			// console.log(folder);
+			if (!folder) {
 				return Promise.reject(new InsightError());
 			}
+
+			// go through each file in the folder
+			const files = folder.file(/.+/); // regex to match any file name
+			if (!files || files.length === 0) {
+				return Promise.reject(new InsightError());
+			}
+
+			await helper(files, parser, buildingList, dataList);
+
+			if (dataList.getNumberOfSections() === 0) {
+				return Promise.reject(new InsightError());
+			}
+
+			this.allID.push(id);
+			await ds.writeDataToDisk(dataList, id);
+		} catch (error) {
+			return Promise.reject(new InsightError());
+		}
+		return this.allID;
+	}
+
+	public async addDatasetSection(id: string, content: string, kind: InsightDatasetKind): Promise<string[]> {
+		try {
 
 			const dataList = new SectionsList(id, kind);
 
@@ -48,8 +114,6 @@ export default class InsightFacade implements IInsightFacade {
 			if (!coursesFolder) {
 				return Promise.reject(new InsightError());
 			}
-
-			// Check if there are any files in the courses folder
 
 			const files = coursesFolder.file(/.+/); // regex to match any file name
 			if (!files || files.length === 0) {
@@ -126,7 +190,14 @@ export default class InsightFacade implements IInsightFacade {
 			// Create an array of promises to read and parse the JSON files concurrently
 			const filePromises = files.map(async (file) => {
 				const id = file.split(".")[0];
-				const kind = InsightDatasetKind.Sections;
+				// find the kind
+				let kind: InsightDatasetKind;
+				if (file.includes("rooms")) {
+					kind = InsightDatasetKind.Rooms;
+				} else {
+					kind = InsightDatasetKind.Sections;
+				}
+
 				let numRows = 0;
 
 				try {
