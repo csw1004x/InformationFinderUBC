@@ -2,6 +2,10 @@ import {InsightDataset, InsightError, InsightResult, ResultTooLargeError} from "
 import * as fs from "fs-extra";
 import InsightFacade from "./InsightFacade";
 
+const validMField = ["avg", "pass", "fail", "audit", "year",
+	"lat","lon","seats"];
+const validSField = ["dept", "id", "instructor", "title", "uuid",
+	"fullname","shortname","number","name","address","type","furniture","href"];
 export function bodyHelper(query: any): string {
 	try {
 		let queryObject = query as any;
@@ -69,10 +73,10 @@ export function sComparatorHelper(sDict: any, key: string): string {
 	let idstring = sKeyList[0];
 	let sfield = sKeyList[1];
 
-	blockString += "section." + sfield;
+	blockString += "element." + sfield;
 
 	// check field validity
-	if (!["dept", "id", "instructor", "title", "uuid"].includes(sfield)) {
+	if (!validSField.includes(sfield)) {
 		throw new InsightError();
 	}
 
@@ -103,11 +107,11 @@ export function mComparatorHelper(mDict: any, key: string): string {
 		let mfield = mKeyList[1];
 
 		// check field validity
-		if (!["avg", "pass", "fail", "audit", "year"].includes(mfield)) {
+		if (!validMField.includes(mfield)) {
 			throw new InsightError();
 		}
 
-		blockString += "section." + mfield;
+		blockString += "element." + mfield;
 
 		if (key === "GT") {
 			blockString += " > ";

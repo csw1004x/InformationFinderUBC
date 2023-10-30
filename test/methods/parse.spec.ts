@@ -140,6 +140,9 @@ describe("Tests for performQueryHelper", () => {
 		it("empty where should return empty string", () => {// let queryObject = emptyWhereQuery as any;
 			// let queryObject = complexScompQuery as any;
 			let queryObject = emptyWhereQuery as any;
+			console.log(queryObject["WHERE"]);
+			expect(queryObject["WHERE"]).to.eql({});
+			expect(JSON.stringify(queryObject["WHERE"])).to.eql("{}");
 			let s = bd.bodyHelper(queryObject["WHERE"]);
 			expect(s).to.eql("");
 		});
@@ -149,7 +152,9 @@ describe("Tests for performQueryHelper", () => {
 			let queryObject = emptyWhereQuery as any;
 			let s = bd.bodyHelper(queryObject["WHERE"]);
 			expect(s).to.eql("");
+			console.log(queryObject["NOTHERE"]);
 		});
+
 
 	});
 
@@ -157,28 +162,42 @@ describe("Tests for performQueryHelper", () => {
 		it("grouping", async () => {
 			let facade = new InsightFacade();
 			let datas = await facade.listDatasets();
-			console.log(datas);
-
 			let parsedJSON = await pq.getSections("sections");
-			console.log(parsedJSON);
+			let filteredJSON = pq.filterWhere(parsedJSON, emptyWhereQuery);
 
+			let groupedJSON = filteredJSON.reduce((accumulator: any, element: any) => {
+				let key = element["title"]; // + "_" + element.instructor;
+				accumulator[key] = (accumulator[key] || []).concat(element);
+				return accumulator;
+			}, {});
 
+			let result: {[key: string]: any} = {};
+
+			for (let key in groupedJSON) {
+				let group = groupedJSON[key];
+				let sum = group.reduce((acc: any, element: any) => {
+					return acc + element["avg"];
+				}, 0);
+				let avg = sum / group.length;
+				result[key] = {avg};
+			}
+			console.log(result);
 		});
 
 	});
-
-	// describe("performQueryHelper", () => {
-	// 	it("should reject for empty, or incomplete queries", () => {
-	// 		expect(pq.queryValidator("")).to.eql(false);
-	// 		expect(pq.queryValidator(null)).to.eql(false);
-	// 		expect(pq.queryValidator(undefined)).to.eql(false);
-	// 		expect(pq.queryValidator(0)).to.eql(false);
-	// 		expect(pq.queryValidator(noOptionsQuery)).to.eql(false);
-	// 		expect(pq.queryValidator(noWhereQuery)).to.eql(false);
-	// 		expect(pq.queryValidator(simpleQuery)).to.eql(true);
-	// 	});
-	// });
 });
+
+// describe("performQueryHelper", () => {
+// 	it("should reject for empty, or incomplete queries", () => {
+// 		expect(pq.queryValidator("")).to.eql(false);
+// 		expect(pq.queryValidator(null)).to.eql(false);
+// 		expect(pq.queryValidator(undefined)).to.eql(false);
+// 		expect(pq.queryValidator(0)).to.eql(false);
+// 		expect(pq.queryValidator(noOptionsQuery)).to.eql(false);
+// 		expect(pq.queryValidator(noWhereQuery)).to.eql(false);
+// 		expect(pq.queryValidator(simpleQuery)).to.eql(true);
+// 	});
+// });
 
 // describe("Integration tests", () => {
 // 	before(() => {
