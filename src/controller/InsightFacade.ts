@@ -101,7 +101,6 @@ export default class InsightFacade implements IInsightFacade {
 
 	public async addDatasetSection(id: string, content: string, kind: InsightDatasetKind): Promise<string[]> {
 		try {
-
 			const dataList = new SectionsList(id, kind);
 
 			const zip = new JSZip();
