@@ -59,7 +59,6 @@ export default class InsightFacade implements IInsightFacade {
 			const zip = new JSZip();
 			let tmp = await zip.loadAsync(content, {base64: true});
 
-			const parser = require("parse5");
 			const dataList = new RoomsList(id, kind);
 
 			// check if zip contains index.htm
@@ -71,7 +70,7 @@ export default class InsightFacade implements IInsightFacade {
 				return Promise.reject(new InsightError());
 			}
 
-			const document = parser.parse(indexFile);
+			const document = parse(indexFile);
 			findTBody(document, buildingList);
 
 			// go to the folder that contains the html files
@@ -87,7 +86,7 @@ export default class InsightFacade implements IInsightFacade {
 				return Promise.reject(new InsightError());
 			}
 
-			await helper(files, parser, buildingList, dataList);
+			await helper(files, buildingList, dataList);
 
 			if (dataList.getNumberOfSections() === 0) {
 				return Promise.reject(new InsightError());
@@ -103,7 +102,6 @@ export default class InsightFacade implements IInsightFacade {
 
 	public async addDatasetSection(id: string, content: string, kind: InsightDatasetKind): Promise<string[]> {
 		try {
-
 			const dataList = new SectionsList(id, kind);
 
 			const zip = new JSZip();

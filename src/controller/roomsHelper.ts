@@ -5,6 +5,7 @@ import {Rooms} from "../classes/Rooms";
 import {BuildingList} from "../classes/BuildingList";
 import JSZip from "jszip";
 import * as http from "http";
+import {parse} from "parse5";
 
 export function getRoom(document: any, building: Building, dataList: RoomsList){
 	for (let child in document.childNodes) {
@@ -124,12 +125,12 @@ export function findTD(document: any, building: Building): void {
 	}
 }
 
-export async function helper(files: JSZip.JSZipObject[], parser: any, buildingList: BuildingList, dataList: RoomsList) {
+export async function helper(files: JSZip.JSZipObject[], buildingList: BuildingList, dataList: RoomsList) {
 	// Use Promise.all to process all files in parallel and store the results in an array
 	const fileContentsPromises = files.map(async (file) => {
 		try {
 			const fileContent = await file.async("string");
-			const folderFile = parser.parse(fileContent);
+			const folderFile = parse(fileContent);
 
 			for (let building of buildingList.getBuildingList()) {
 				if (building.getHref() === "./" + file.name) {
