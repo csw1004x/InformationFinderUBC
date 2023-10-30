@@ -15,4 +15,7 @@ export class BuildingList {
 		this.buildingList.push(building);
 	}
 
+	public removeBuilding(building: Building) {
+		this.buildingList.splice(this.buildingList.indexOf(building), 1);
+	}
 }

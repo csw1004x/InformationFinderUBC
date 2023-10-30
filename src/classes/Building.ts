@@ -1,10 +1,10 @@
 export class Building {
-	private fullname: string;
-	private shortname: string;
-	private address: string;
-	private lat: number;
-	private lon: number;
-	private href: string;
+	public fullname: string;
+	public shortname: string;
+	public address: string;
+	public lat: number;
+	public lon: number;
+	public href: string;
 
 	constructor() {
 		this.fullname = "";

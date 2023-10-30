@@ -18,7 +18,7 @@ import {Building} from "../classes/Building";
 import {BuildingList} from "../classes/BuildingList";
 import {Rooms} from "../classes/Rooms";
 import {parse} from "parse5";
-import {findTBody, getRoom, helper} from "./roomsHelper";
+import {findTable, findTBody, geoLocator, helper} from "./roomsHelper";
 
 
 /**
@@ -43,11 +43,15 @@ export default class InsightFacade implements IInsightFacade {
 			return Promise.reject(new InsightError());
 		}
 
-		if (kind === InsightDatasetKind.Sections) {
-			return this.addDatasetSection(id, content, kind);
-		}
-		if (kind === InsightDatasetKind.Rooms) {
-			return this.addDatasetRooms(id, content, kind);
+		try{
+			if (kind === InsightDatasetKind.Sections) {
+				return this.addDatasetSection(id, content, kind);
+			}
+			if (kind === InsightDatasetKind.Rooms) {
+				return this.addDatasetRooms(id, content, kind);
+			}
+		} catch (error) {
+			return Promise.reject(new InsightError());
 		}
 		return this.allID;
 	}
@@ -71,7 +75,19 @@ export default class InsightFacade implements IInsightFacade {
 			}
 
 			const document = parse(indexFile);
+
+			if (!findTable(document)) {
+				return Promise.reject(new InsightError());
+			}
+
 			findTBody(document, buildingList);
+
+			for (let building of buildingList.getBuildingList()) {
+				geoLocator(building, buildingList);
+				if (building.getLat() === 404 && building.getLon() === 404) {
+					buildingList.removeBuilding(building);
+				}
+			}
 
 			// go to the folder that contains the html files
 			const folder = zip.folder("campus/discover/buildings-and-classrooms");
@@ -82,10 +98,6 @@ export default class InsightFacade implements IInsightFacade {
 
 			// go through each file in the folder
 			const files = folder.file(/.+/); // regex to match any file name
-			if (!files || files.length === 0) {
-				return Promise.reject(new InsightError());
-			}
-
 			await helper(files, buildingList, dataList);
 
 			if (dataList.getNumberOfSections() === 0) {
@@ -189,12 +201,7 @@ export default class InsightFacade implements IInsightFacade {
 			const filePromises = files.map(async (file) => {
 				const id = file.split(".")[0];
 				// find the kind
-				let kind: InsightDatasetKind;
-				if (file.includes("rooms")) {
-					kind = InsightDatasetKind.Rooms;
-				} else {
-					kind = InsightDatasetKind.Sections;
-				}
+				let kind = InsightDatasetKind.Sections;
 
 				let numRows = 0;
 
@@ -203,8 +210,17 @@ export default class InsightFacade implements IInsightFacade {
 					const fileContents = await fs.readFile(filePath, "utf8");
 					const jsonData = JSON.parse(fileContents);
 
+					const tmp = jsonData["kind"];
+					if (tmp === "rooms") {
+						kind = InsightDatasetKind.Rooms;
+					}
+
 					if (jsonData && jsonData.sectionList && Array.isArray(jsonData.sectionList)) {
 						numRows = jsonData.sectionList.length;
+					}
+
+					if (jsonData && jsonData.roomsList && Array.isArray(jsonData.roomsList)) {
+						numRows = jsonData.roomsList.length;
 					}
 				} catch (error) {
 					// Handle errors here, or skip as needed

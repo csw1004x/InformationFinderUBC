@@ -6,8 +6,9 @@ import {BuildingList} from "../classes/BuildingList";
 import JSZip from "jszip";
 import * as http from "http";
 import {parse} from "parse5";
+import {InsightError} from "./IInsightFacade";
 
-export function getRoom(document: any, building: Building, dataList: RoomsList){
+export function getRoom(document: any, building: Building, dataList: RoomsList) {
 	for (let child in document.childNodes) {
 		if (document.childNodes[child].nodeName === "tbody") {
 			findTRRoom(document.childNodes[child], building, dataList);
@@ -81,17 +82,70 @@ export function findTBody(document: any, buildingList: BuildingList): void {
 	}
 }
 
+// find if the table contains a tbody if not return false
+export function findTable(document: any): boolean {
+	if (document.nodeName === "tbody") {
+		return true;
+	}
+
+	for (let child in document.childNodes) {
+		if (findTable(document.childNodes[child])) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+
 // Iterate and print all the tr and td
 export function findTR(document: any, buildingList: BuildingList): void {
 	for (let child in document.childNodes) {
 		if (document.childNodes[child].nodeName === "tr") {
 			let building = new Building();
 			findTD(document.childNodes[child], building);
-			geoLocator(building);
+			geoLocator(building, buildingList);
 			buildingList.pushBuilding(building);
 		} else {
 			findTR(document.childNodes[child], buildingList);
 		}
+	}
+}
+
+export function geoLocator(building: Building, buildingList: BuildingList){
+	// url-encode the address
+	const encodedAddress = encodeURIComponent(building.getAddress());
+	// set up your Geocoding url
+	const geoUrl = "http://cs310.students.cs.ubc.ca:11316/api/v1/project_team200/" + encodedAddress;
+	// console.log(geoUrl);
+
+	try{
+		http.get(geoUrl, (res) => {
+
+			res.setEncoding("utf8");
+			let rawData = "";
+			res.on("data", (chunk) => {
+				rawData += chunk;
+			});
+			res.on("end", () => {
+				try {
+					const parsedData = JSON.parse(rawData);
+					// convert from parsed json data into number
+					const lat = Number(parsedData.lat);
+					const lon = Number(parsedData.lon);
+					// console.log("yes");
+					building.setLat(lat);
+					building.setLon(lon);
+				} catch (e) {
+					// console.error(e.message);
+				}
+			});
+		}).on("error", (e) => {
+			building.setLat(404);
+			building.setLon(404);
+		});
+	} catch (e) {
+		// console.error(e.message);
 	}
 }
 
@@ -145,34 +199,4 @@ export async function helper(files: JSZip.JSZipObject[], buildingList: BuildingL
 	await Promise.all(fileContentsPromises);
 }
 
-export function geoLocator(building: Building){
-	// url-encode the address
-	const encodedAddress = encodeURIComponent(building.getAddress());
-	// set up your Geocoding url
-	const geoUrl = "http://cs310.students.cs.ubc.ca:11316/api/v1/project_team200/" + encodedAddress;
 
-	try{
-		http.get(geoUrl, (res) => {
-
-			res.setEncoding("utf8");
-			let rawData = "";
-			res.on("data", (chunk) => {
-				rawData += chunk;
-			}
-			);
-			res.on("end", () => {
-				const parsedData = JSON.parse(rawData);
-				// convert from parsed json data into number
-				const lat = Number(parsedData.lat);
-				const lon = Number(parsedData.lon);
-				building.setLat(lat);
-				building.setLon(lon);
-			});
-		}).on("error", (e) => {
-			building.setLat(404);
-			building.setLon(404);
-		});
-	} catch (e) {
-		console.error("Error:", e);
-	}
-}
