@@ -1,0 +1,56 @@
+{
+	"title": "reject_min_not_number",
+	"input": {
+		"WHERE": {
+			"GT": {
+				"sections_avg": 97
+			}
+		},
+		"OPTIONS": {
+			"COLUMNS": [
+				"sections_title",
+				"sections_title",
+				"overallAvg",
+				"mostRecent",
+				"mostEarly",
+				"numberSections"
+			],
+			"ORDER": {
+				"dir": "UP",
+				"keys": [
+					"mostRecent",
+					"overallAvg"
+				]
+			}
+		},
+		"TRANSFORMATIONS": {
+			"GROUP": [
+				"sections_title"
+			],
+			"APPLY": [
+				{
+					"overallAvg": {
+						"AVG": "sections_avg"
+					}
+				},
+				{
+					"mostRecent": {
+						"MAX": "sections_year"
+					}
+				},
+				{
+					"mostEarly": {
+						"MIN": "sections_instructor"
+					}
+				},
+				{
+					"numberSections": {
+						"COUNT": "sections_year"
+					}
+				}
+			]
+		}
+	},
+	"errorExpected": true,
+	"expected": "InsightError"
+}

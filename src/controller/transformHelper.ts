@@ -29,8 +29,16 @@ export function groupHelper(filteredJSON: any, knownQueryTransformationsGroup: a
 
 export function applyHelper(group: any, knownQueryTransformationsApply: any): any {
 	let appliedJSONGroup: any = {};
+	let observedRules: any = new Set();
+
 
 	for (let applyRule of knownQueryTransformationsApply) {
+		if (observedRules.has(Object.keys(applyRule)[0])) {
+			throw new InsightError();
+		} else {
+			observedRules.add(Object.keys(applyRule)[0]);
+		}
+
 		for (let applyKey in applyRule) {
 			let groupedValue: any;
 			for (let applyToken in applyRule[applyKey]) {
@@ -66,6 +74,9 @@ export function applyHelper(group: any, knownQueryTransformationsApply: any): an
 
 function avg(group: any, field: any): number {
 	let total: Decimal = group.reduce((acc: any, element: any) => {
+		if (typeof element[field] !== "number") {
+			throw new InsightError();
+		}
 		let dec = new Decimal(element[field]);
 		return acc.add(dec);
 	}, new Decimal(0));
@@ -75,18 +86,27 @@ function avg(group: any, field: any): number {
 
 function max(group: any, field: any): number {
 	return group.reduce((maxValue: any, element: any) => {
+		if (typeof element[field] !== "number") {
+			throw new InsightError();
+		}
 		return element[field] > maxValue ? element[field] : maxValue;
 	}, group[0][field]);
 }
 
 function min(group: any, field: any): number {
 	return group.reduce((minValue: any, element: any) => {
+		if (typeof element[field] !== "number") {
+			throw new InsightError();
+		}
 		return element[field] < minValue ? element[field] : minValue;
 	}, group[0][field]);
 }
 
 function sum(group: any, field: any): number {
 	let s: number = group.reduce((acc: any, element: any) => {
+		if (typeof element[field] !== "number") {
+			throw new InsightError();
+		}
 		return acc + element[field];
 	}, 0);
 	return Math.round(s * 100) / 100;

@@ -1,0 +1,190 @@
+{
+	"title": "fulfill_count_not_number",
+	"input": {
+		"WHERE": {
+			"GT": {
+				"sections_avg": 97
+			}
+		},
+		"OPTIONS": {
+			"COLUMNS": [
+				"sections_title",
+				"sections_title",
+				"overallAvg",
+				"mostRecent",
+				"mostEarly",
+				"numberInstructor"
+			],
+			"ORDER": {
+				"dir": "UP",
+				"keys": [
+					"mostRecent",
+					"overallAvg"
+				]
+			}
+		},
+		"TRANSFORMATIONS": {
+			"GROUP": [
+				"sections_title"
+			],
+			"APPLY": [
+				{
+					"overallAvg": {
+						"AVG": "sections_avg"
+					}
+				},
+				{
+					"mostRecent": {
+						"MAX": "sections_year"
+					}
+				},
+				{
+					"mostEarly": {
+						"MIN": "sections_year"
+					}
+				},
+				{
+					"numberInstructor": {
+						"COUNT": "sections_instructor"
+					}
+				}
+			]
+		}
+	},
+	"errorExpected": false,
+	"expected": [
+		{
+			"sections_title": "cor des ed res",
+			"overallAvg": 97.09,
+			"mostRecent": 2007,
+			"mostEarly": 1900,
+			"numberInstructor": 2
+		},
+		{
+			"sections_title": "coll&uni teachng",
+			"overallAvg": 97.67,
+			"mostRecent": 2007,
+			"mostEarly": 2007,
+			"numberInstructor": 1
+		},
+		{
+			"sections_title": "acad assess schl",
+			"overallAvg": 97.59,
+			"mostRecent": 2009,
+			"mostEarly": 1900,
+			"numberInstructor": 2
+		},
+		{
+			"sections_title": "multimedia sys",
+			"overallAvg": 98.75,
+			"mostRecent": 2009,
+			"mostEarly": 1900,
+			"numberInstructor": 2
+		},
+		{
+			"sections_title": "algb topology i",
+			"overallAvg": 99.78,
+			"mostRecent": 2009,
+			"mostEarly": 1900,
+			"numberInstructor": 2
+		},
+		{
+			"sections_title": "harmonic anal i",
+			"overallAvg": 97.09,
+			"mostRecent": 2010,
+			"mostEarly": 1900,
+			"numberInstructor": 2
+		},
+		{
+			"sections_title": "eth&profl issues",
+			"overallAvg": 97.33,
+			"mostRecent": 2010,
+			"mostEarly": 1900,
+			"numberInstructor": 2
+		},
+		{
+			"sections_title": "algb geometry i",
+			"overallAvg": 97.48,
+			"mostRecent": 2010,
+			"mostEarly": 1900,
+			"numberInstructor": 2
+		},
+		{
+			"sections_title": "assess lrn diffi",
+			"overallAvg": 97.94,
+			"mostRecent": 2010,
+			"mostEarly": 1900,
+			"numberInstructor": 2
+		},
+		{
+			"sections_title": "dev el sk df&hrd",
+			"overallAvg": 98.45,
+			"mostRecent": 2011,
+			"mostEarly": 1900,
+			"numberInstructor": 2
+		},
+		{
+			"sections_title": "career planning",
+			"overallAvg": 98.04,
+			"mostRecent": 2012,
+			"mostEarly": 1900,
+			"numberInstructor": 3
+		},
+		{
+			"sections_title": "sem in autism",
+			"overallAvg": 97.69,
+			"mostRecent": 2013,
+			"mostEarly": 2013,
+			"numberInstructor": 1
+		},
+		{
+			"sections_title": "thesis",
+			"overallAvg": 98,
+			"mostRecent": 2013,
+			"mostEarly": 2013,
+			"numberInstructor": 2
+		},
+		{
+			"sections_title": "educ stds autism",
+			"overallAvg": 98.48,
+			"mostRecent": 2014,
+			"mostEarly": 1900,
+			"numberInstructor": 3
+		},
+		{
+			"sections_title": "res mthd in educ",
+			"overallAvg": 97.5,
+			"mostRecent": 2015,
+			"mostEarly": 2015,
+			"numberInstructor": 1
+		},
+		{
+			"sections_title": "fam nrs pract",
+			"overallAvg": 98.2,
+			"mostRecent": 2015,
+			"mostEarly": 1900,
+			"numberInstructor": 2
+		},
+		{
+			"sections_title": "cl pro prim care",
+			"overallAvg": 98.46,
+			"mostRecent": 2015,
+			"mostEarly": 1900,
+			"numberInstructor": 3
+		},
+		{
+			"sections_title": "work int health",
+			"overallAvg": 98.98,
+			"mostRecent": 2015,
+			"mostEarly": 1900,
+			"numberInstructor": 2
+		},
+		{
+			"sections_title": "diff geometry i",
+			"overallAvg": 97.25,
+			"mostRecent": 2016,
+			"mostEarly": 1900,
+			"numberInstructor": 2
+		}
+	]
+}
