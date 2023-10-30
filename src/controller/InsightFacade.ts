@@ -164,33 +164,29 @@ export default class InsightFacade implements IInsightFacade {
 			// validate query body & initiate necessary variables
 			pq.queryValidator(query);
 			let knownQuery = query as any;
-			let idString: string = pq.getID(knownQuery["WHERE"]);
-
-			// parsedJSON contains the JSONs that match idString
+			// console.log(1);
+			let idString: string = pq.getID(knownQuery);
+			// console.log(2);
+			// parsedJSON: contains the JSONs that match idString
 			let parsedJSON = await pq.getSections(idString);
-
-			// filteredJSON contains the JSONs that passed WHERE
+			// console.log(3);
+			// filteredJSON: contains the JSONs that passed WHERE
 			let whereFilteredJSON = pq.filterWhere(parsedJSON, knownQuery);
-
-			// transformedJSON
-
-			// passedList contains InsightResults that paased Options
-			let passedList = pq.filterOptions(whereFilteredJSON, knownQuery, idString);
-
+			// console.log(whereFilteredJSON);
+			// console.log(4);
+			// transformedJSON: Group and Apply has been applied
+			let transformedJSON = pq.transform(whereFilteredJSON, knownQuery["TRANSFORMATIONS"]);
+			// console.log(transformedJSON);
+			// console.log(5);
+			// passedList: contains InsightResults that passed Options
+			let passedList = pq.filterOptions(transformedJSON, knownQuery, idString);
+			// console.log(passedList);
+			// console.log(6);
 			// sort query results
-			let orderColumn = knownQuery["OPTIONS"]["ORDER"];
-			if (pq.orderValidator(orderColumn, idString)) {
-				let field = knownQuery["OPTIONS"]["ORDER"].split("_")[1];
+			let sortedList = pq.sortQuery(passedList, knownQuery);
 
-				if (["avg", "pass", "fail", "audit", "year"].includes(field)) {
-					passedList.sort((a: any, b: any) => a[orderColumn] - b[orderColumn]);
-				} else if (["dept", "id", "instructor", "title", "uuid"].includes(field)) {
-					passedList.sort((a: any, b: any) => a[orderColumn].localeCompare(b[orderColumn]));
-				} else {
-					return Promise.reject(new InsightError());
-				}
-			}
-			return Promise.resolve(passedList);
+			return Promise.resolve(sortedList);
+
 		} catch (error) {
 			if (error instanceof ResultTooLargeError) {
 				return Promise.reject(new ResultTooLargeError());
