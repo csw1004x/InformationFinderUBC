@@ -261,6 +261,7 @@ export function sortQuery(passedList: any, knownQuery: any): any {
 	if (passedList.length <= 1) {
 		return passedList;
 	}
+	// console.log(passedList);
 	// console.log(22);
 	// case 1 - sort by single column
 	if (typeof orderColumn === "string") {
@@ -273,12 +274,16 @@ export function sortQuery(passedList: any, knownQuery: any): any {
 		// case 2 - sort by more descriptions
 	} else if (orderColumn["dir"] && orderColumn["keys"]) {
 		// console.log(24);
+		// ensuring all order keys are in columns
+		for (let key of orderColumn["keys"]) {
+			if (passedList[0][key] === undefined) {
+				throw new InsightError();
+			}
+		}
 		passedList.sort((a: any, b: any) => {
 			let direction: number = orderColumn["dir"] === "DOWN" ? -1 : 1;
+			// comparing
 			for (let key of orderColumn["keys"]) {
-				if (a[key] === undefined) {
-					throw new InsightError();
-				}
 				if (a[key] < b[key]) {
 					return direction;
 				} else {
