@@ -50,7 +50,17 @@ describe("InsightFacade", function () {
 		});
 
 		it("Test zip file", async function () {
-			const result: Promise<string[]> = facade.addDataset("sections", sections, InsightDatasetKind.Sections);
+			try {
+				const result = await facade.addDataset("ubc", sections, InsightDatasetKind.Sections);
+
+				expect(result).to.deep.equal(["ubc"]);
+
+				const datasets = await facade.listDatasets();
+
+
+			}  catch (err){
+				expect.fail("should not have rejected!");
+			}
 		});
 	});
 
@@ -63,6 +73,19 @@ describe("InsightFacade", function () {
 
 		it("Test zip file", async function () {
 			await facade.addDataset("MACE", section2, InsightDatasetKind.Rooms);
+		});
+
+
+		it("Test List file", async function () {
+			try {
+				const result = await facade.addDataset("MACE", section2, InsightDatasetKind.Rooms);
+
+				const datasets = await facade.listDatasets();
+
+
+			}  catch (err){
+				expect.fail("should not have rejected!");
+			}
 		});
 
 	});
