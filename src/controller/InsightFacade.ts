@@ -71,6 +71,9 @@ export default class InsightFacade implements IInsightFacade {
 
 			const document = parse(indexFile);
 			findTBody(document, buildingList);
+			// for (let building of buildingList.getBuildingList()) {
+			// 	console.log(building);
+			// }
 
 			// go to the folder that contains the html files
 			const folder = zip.folder("campus/discover/buildings-and-classrooms");
