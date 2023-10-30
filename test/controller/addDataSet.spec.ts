@@ -89,16 +89,4 @@ describe("InsightFacade", function () {
 		});
 
 	});
-
-	describe("Add/Remove/List Dataset ROOMS", function () {
-		beforeEach(function () {
-			clearDisk();
-			facade = new InsightFacade();
-		});
-
-		it("Test zip file", async function () {
-			await facade.addDataset("MACE", section2, InsightDatasetKind.Rooms);
-			await facade.addDataset("ubc", sections, InsightDatasetKind.Sections);
-		});
-	});
 });

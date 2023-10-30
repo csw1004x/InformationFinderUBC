@@ -508,7 +508,7 @@ describe("InsightFacade", function () {
 		});
 
 		folderTest<Input, Output, Error>(
-			"Dynamic InsightFacade PerformQuery tests",
+			"Foldertest - Rooms",
 			async (input) => await facade.performQuery(input),
 			"./test/resources/queries_rooms",
 			{
@@ -530,7 +530,7 @@ describe("InsightFacade", function () {
 		);
 
 		folderTest<Input, Output, Error>(
-			"Dynamic InsightFacade PerformQuery tests",
+			"Foldertest - Transformation",
 			async (input) => await facade.performQuery(input),
 			"./test/resources/queries_transformation",
 			{
@@ -553,7 +553,7 @@ describe("InsightFacade", function () {
 
 
 		folderTest<Input, Output, Error>(
-			"Dynamic InsightFacade PerformQuery tests",
+			"Foldertest - General",
 			async (input) => await facade.performQuery(input),
 			"./test/resources/queries",
 			{

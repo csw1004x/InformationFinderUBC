@@ -288,7 +288,7 @@ export function sortQuery(passedList: any, knownQuery: any): any {
 					return direction * -1;
 				}
 			}
-			return 0;
+			return 1;
 		});
 	} else {
 		throw new InsightError();

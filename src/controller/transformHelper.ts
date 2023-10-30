@@ -53,7 +53,6 @@ export function applyHelper(group: any, knownQueryTransformationsApply: any): an
 						groupedValue = avg(group, field);
 						break;
 					case "COUNT":
-						// groupedValue = group.length;
 						groupedValue = count(group, field);
 						break;
 					case "SUM":
