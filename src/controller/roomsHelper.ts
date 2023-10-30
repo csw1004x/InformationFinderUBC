@@ -85,6 +85,7 @@ export function findTR(document: any, buildingList: BuildingList): void {
 		if (document.childNodes[child].nodeName === "tr") {
 			let building = new Building();
 			findTD(document.childNodes[child], building);
+			geoLocator(building);
 			buildingList.pushBuilding(building);
 		} else {
 			findTR(document.childNodes[child], buildingList);
@@ -140,4 +141,26 @@ export async function helper(files: JSZip.JSZipObject[], parser: any, buildingLi
 	});
 
 	await Promise.all(fileContentsPromises);
+}
+
+export function geoLocator(building: Building){
+	// url-encode the address
+	const encodedAddress = encodeURIComponent(building.getAddress());
+	console.log(encodedAddress);
+	// set up your Geocoding url
+	const geoUrl = "http://cs310.students.cs.ubc.ca:11316/api/v1/project_team200/" + encodedAddress;
+
+	// make a GET request to the url and store the result
+	fetch(geoUrl)
+		.then((res) => {
+			return res.json();
+		})
+		.then((json) => {
+			// console.log(json);
+			building.setLat(json.lat);
+			building.setLon(json.lon);
+		})
+		.catch((err) => {
+			console.log(err);
+		});
 }
