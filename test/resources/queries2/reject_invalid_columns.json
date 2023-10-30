@@ -1,0 +1,56 @@
+{
+	"title": "reject_invalid_columns",
+	"input": {
+		"WHERE": {
+			"GT": {
+				"sections_avg": 97
+			}
+		},
+		"OPTIONS": {
+			"COLUMNS": [
+				"sections_title",
+				"sections_title",
+				"overallAvg",
+				"mostRecent",
+				"mostEarly",
+				"numberSections"
+			],
+			"ORDER": {
+				"dir": "UP",
+				"keys": [
+					"mostRecent",
+					"overallAvg"
+				]
+			}
+		},
+		"TRANSFORMATIONS": {
+			"GROUP": [
+				"sections_title"
+			],
+			"APPLY": [
+				{
+					"overallAvg": {
+						"AVG": "sections_avg"
+					}
+				},
+				{
+					"mostRecent": {
+						"MAX": "sections_year"
+					}
+				},
+				{
+					"mostEarly": {
+						"MIN": "sections_year"
+					}
+				},
+				{
+					"numberInstructor": {
+						"COUNT": "sections_instructor"
+					}
+				}
+			]
+		}
+	},
+	"errorExpected": true,
+	"expected": "InsightError"
+}
