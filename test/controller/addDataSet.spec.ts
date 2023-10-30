@@ -31,10 +31,13 @@ describe("InsightFacade", function () {
 
 	// Declare datasets used in tests. You should add more datasets like this!
 	let sections: string;
+	let section2: string;
 
 	before(function () {
 		// This block runs once and loads the datasets.
 		sections = getContentFromArchives("pair.zip");
+		section2 = getContentFromArchives("campus.zip");
+
 
 		// Just in case there is anything hanging around from a previous run of the test suite
 		clearDisk();
@@ -47,7 +50,43 @@ describe("InsightFacade", function () {
 		});
 
 		it("Test zip file", async function () {
-			const result: Promise<string[]> = facade.addDataset("sections", sections, InsightDatasetKind.Sections);
+			try {
+				const result = await facade.addDataset("ubc", sections, InsightDatasetKind.Sections);
+
+				expect(result).to.deep.equal(["ubc"]);
+
+				const datasets = await facade.listDatasets();
+
+
+			}  catch (err){
+				expect.fail("should not have rejected!");
+			}
 		});
+	});
+
+
+	describe("Add/Remove/List Dataset ROOMS", function () {
+		beforeEach(function () {
+			clearDisk();
+			facade = new InsightFacade();
+		});
+
+		it("Test zip file", async function () {
+			await facade.addDataset("MACE", section2, InsightDatasetKind.Rooms);
+		});
+
+
+		it("Test List file", async function () {
+			try {
+				const result = await facade.addDataset("MACE", section2, InsightDatasetKind.Rooms);
+
+				const datasets = await facade.listDatasets();
+
+
+			}  catch (err){
+				expect.fail("should not have rejected!");
+			}
+		});
+
 	});
 });
