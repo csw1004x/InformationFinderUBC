@@ -1,0 +1,223 @@
+{
+	"title": "fulfill_transformation_2_groups",
+	"input": {
+		"WHERE": {
+			"GT": {
+				"sections_avg": 97
+			}
+		},
+		"OPTIONS": {
+			"COLUMNS": [
+				"sections_instructor",
+				"sections_title",
+				"overallAvg"
+			]
+		},
+		"TRANSFORMATIONS": {
+			"GROUP": [
+				"sections_instructor",
+				"sections_title"
+			],
+			"APPLY": [
+				{
+					"overallAvg": {
+						"AVG": "sections_avg"
+					}
+				}
+			]
+		}
+	},
+	"errorExpected": false,
+	"expected": [
+		{
+			"sections_instructor": "cox, daniel",
+			"sections_title": "career planning",
+			"overallAvg": 99.19
+		},
+		{
+			"sections_instructor": "neault, roberta a",
+			"sections_title": "career planning",
+			"overallAvg": 97.47
+		},
+		{
+			"sections_instructor": "",
+			"sections_title": "career planning",
+			"overallAvg": 97.47
+		},
+		{
+			"sections_instructor": "maillard, keith",
+			"sections_title": "thesis",
+			"overallAvg": 98
+		},
+		{
+			"sections_instructor": "grady, albert wayne",
+			"sections_title": "thesis",
+			"overallAvg": 98
+		},
+		{
+			"sections_instructor": "morgan, tannis",
+			"sections_title": "res mthd in educ",
+			"overallAvg": 97.5
+		},
+		{
+			"sections_instructor": "coria, lino",
+			"sections_title": "multimedia sys",
+			"overallAvg": 98.75
+		},
+		{
+			"sections_instructor": "",
+			"sections_title": "multimedia sys",
+			"overallAvg": 98.75
+		},
+		{
+			"sections_instructor": "cole, kenneth",
+			"sections_title": "assess lrn diffi",
+			"overallAvg": 98.02
+		},
+		{
+			"sections_instructor": "",
+			"sections_title": "assess lrn diffi",
+			"overallAvg": 97.83
+		},
+		{
+			"sections_instructor": "grow, laura",
+			"sections_title": "educ stds autism",
+			"overallAvg": 98.71
+		},
+		{
+			"sections_instructor": "wilk, diana",
+			"sections_title": "educ stds autism",
+			"overallAvg": 97.41
+		},
+		{
+			"sections_instructor": "",
+			"sections_title": "educ stds autism",
+			"overallAvg": 98.67
+		},
+		{
+			"sections_instructor": "cannon, joanna",
+			"sections_title": "dev el sk df&hrd",
+			"overallAvg": 98.45
+		},
+		{
+			"sections_instructor": "",
+			"sections_title": "dev el sk df&hrd",
+			"overallAvg": 98.45
+		},
+		{
+			"sections_instructor": "amaral, deborah;ford, laurie",
+			"sections_title": "acad assess schl",
+			"overallAvg": 97.78
+		},
+		{
+			"sections_instructor": "",
+			"sections_title": "acad assess schl",
+			"overallAvg": 97.41
+		},
+		{
+			"sections_instructor": "grow, laura",
+			"sections_title": "sem in autism",
+			"overallAvg": 97.69
+		},
+		{
+			"sections_instructor": "kishor, nand",
+			"sections_title": "cor des ed res",
+			"overallAvg": 97.09
+		},
+		{
+			"sections_instructor": "",
+			"sections_title": "cor des ed res",
+			"overallAvg": 97.09
+		},
+		{
+			"sections_instructor": "porath, marion",
+			"sections_title": "coll&uni teachng",
+			"overallAvg": 97.67
+		},
+		{
+			"sections_instructor": "fraser, ailana",
+			"sections_title": "diff geometry i",
+			"overallAvg": 97.25
+		},
+		{
+			"sections_instructor": "",
+			"sections_title": "diff geometry i",
+			"overallAvg": 97.25
+		},
+		{
+			"sections_instructor": "gomez, jose",
+			"sections_title": "algb topology i",
+			"overallAvg": 99.78
+		},
+		{
+			"sections_instructor": "",
+			"sections_title": "algb topology i",
+			"overallAvg": 99.78
+		},
+		{
+			"sections_instructor": "karu, kalle",
+			"sections_title": "algb geometry i",
+			"overallAvg": 97.48
+		},
+		{
+			"sections_instructor": "",
+			"sections_title": "algb geometry i",
+			"overallAvg": 97.48
+		},
+		{
+			"sections_instructor": "laba, izabella",
+			"sections_title": "harmonic anal i",
+			"overallAvg": 97.09
+		},
+		{
+			"sections_instructor": "",
+			"sections_title": "harmonic anal i",
+			"overallAvg": 97.09
+		},
+		{
+			"sections_instructor": "brew, nancy",
+			"sections_title": "cl pro prim care",
+			"overallAvg": 98.71
+		},
+		{
+			"sections_instructor": "",
+			"sections_title": "cl pro prim care",
+			"overallAvg": 98.46
+		},
+		{
+			"sections_instructor": "krist, jennifer",
+			"sections_title": "cl pro prim care",
+			"overallAvg": 98.21
+		},
+		{
+			"sections_instructor": "burrows, marlene;harding, jillian;krist, jennifer;mccuaig, fairleth",
+			"sections_title": "fam nrs pract",
+			"overallAvg": 98.02
+		},
+		{
+			"sections_instructor": "",
+			"sections_title": "fam nrs pract",
+			"overallAvg": 98.3
+		},
+		{
+			"sections_instructor": "brew, nancy",
+			"sections_title": "eth&profl issues",
+			"overallAvg": 97.33
+		},
+		{
+			"sections_instructor": "",
+			"sections_title": "eth&profl issues",
+			"overallAvg": 97.33
+		},
+		{
+			"sections_instructor": "frank, erica",
+			"sections_title": "work int health",
+			"overallAvg": 98.98
+		},
+		{
+			"sections_instructor": "",
+			"sections_title": "work int health",
+			"overallAvg": 98.98
+		}
+	]
+}

@@ -20,6 +20,7 @@ import {Rooms} from "../classes/Rooms";
 import {parse} from "parse5";
 import {findTBody, getRoom, helper} from "./roomsHelper";
 
+
 /**
  * This is the main programmatic entry point for the project.
  * Method documentation is in IInsightFacade
@@ -234,48 +235,35 @@ export default class InsightFacade implements IInsightFacade {
 			// validate query body & initiate necessary variables
 			pq.queryValidator(query);
 			let knownQuery = query as any;
-			let ifCondition: string = "return " + pq.bodyHelper(knownQuery["WHERE"]);
-			let queryMatches = new Function("section", ifCondition);
-			let idString: string = pq.getID(knownQuery["WHERE"]);
-
-			// validate options and columns & initiate necessary variables
-			pq.optionsValidator(knownQuery["OPTIONS"]);
-			pq.columnsValidator(knownQuery["OPTIONS"]["COLUMNS"], idString);
+			// console.log(1);
+			let idString: string = pq.getID(knownQuery);
+			// console.log(2);
+			// parsedJSON: contains the JSONs that match idString
 			let parsedJSON = await pq.getSections(idString);
-			let passedList: InsightResult[] = [];
-
-			// for each section, if it matches query, create InsightResult and add to list
-			for (let section of parsedJSON.sectionList) {
-				if (queryMatches(section)) {
-					let passedSection: InsightResult = {};
-					for (let col of knownQuery["OPTIONS"]["COLUMNS"]) {
-						let field = col.split("_")[1];
-						passedSection[col] = section[field];
-					}
-					passedList.push(passedSection);
-				}
-
-				if (passedList.length > 5000) {
-					return Promise.reject(new ResultTooLargeError());
-				}
-			}
-
+			// console.log(3);
+			// filteredJSON: contains the JSONs that passed WHERE
+			let whereFilteredJSON = pq.filterWhere(parsedJSON, knownQuery);
+			// console.log(whereFilteredJSON);
+			// console.log(4);
+			// transformedJSON: Group and Apply has been applied
+			let transformedJSON = pq.transform(whereFilteredJSON, knownQuery["TRANSFORMATIONS"]);
+			// console.log(transformedJSON);
+			// console.log(5);
+			// passedList: contains InsightResults that passed Options
+			let passedList = pq.filterOptions(transformedJSON, knownQuery, idString);
+			// console.log(passedList);
+			// console.log(6);
 			// sort query results
-			let orderColumn = knownQuery["OPTIONS"]["ORDER"];
-			if (pq.orderValidator(orderColumn, idString)) {
-				let field = knownQuery["OPTIONS"]["ORDER"].split("_")[1];
+			let sortedList = pq.sortQuery(passedList, knownQuery);
 
-				if (["avg", "pass", "fail", "audit", "year"].includes(field)) {
-					passedList.sort((a: any, b: any) => a[orderColumn] - b[orderColumn]);
-				} else if (["dept", "id", "instructor", "title", "uuid"].includes(field)) {
-					passedList.sort((a: any, b: any) => a[orderColumn].localeCompare(b[orderColumn]));
-				} else {
-					return Promise.reject(new InsightError());
-				}
-			}
-			return Promise.resolve(passedList);
+			return Promise.resolve(sortedList);
+
 		} catch (error) {
-			return Promise.reject(new InsightError());
+			if (error instanceof ResultTooLargeError) {
+				return Promise.reject(new ResultTooLargeError());
+			} else {
+				return Promise.reject(new InsightError());
+			}
 		}
 	}
 }

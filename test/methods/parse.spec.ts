@@ -3,7 +3,9 @@ import * as fs from "fs-extra";
 import {expect} from "chai";
 
 import * as pq from "../../src/controller/performQueryHelper";
+import * as bd from "../../src/controller/bodyHelper";
 import InsightFacade from "../../src/controller/InsightFacade";
+import {InsightError} from "../../src/controller/IInsightFacade";
 
 function readQuery(filename: string): any {
 	let fileContent = fs.readFileSync("test/methods/queries/" + filename);
@@ -14,6 +16,7 @@ function readQuery(filename: string): any {
 describe("Tests for performQueryHelper", () => {
 	let noOptionsQuery: unknown;
 	let noWhereQuery: unknown;
+	let emptyWhereQuery: unknown;
 	let simpleQuery: unknown;
 	let complexQuery: unknown;
 	let complexMcompQuery: unknown;
@@ -23,6 +26,7 @@ describe("Tests for performQueryHelper", () => {
 	before(() => {
 		noOptionsQuery = readQuery("missingOptions.json");
 		noWhereQuery = readQuery("missingWhere.json");
+		emptyWhereQuery = readQuery("emptyWhere.json");
 		simpleQuery = readQuery("simple.json");
 		complexQuery = readQuery("complex.json");
 		complexMcompQuery = readQuery("complex_mcomp.json");
@@ -92,19 +96,19 @@ describe("Tests for performQueryHelper", () => {
 			console.log(queryObject);
 			console.log(queryObject[key]);
 
-			let s = pq.mComparatorHelper(queryObject[key], key);
+			let s = bd.mComparatorHelper(queryObject[key], key);
 			expect(s).to.eql("(section.avg > 97)");
 		});
 
 		it("integration test: BODY + mComparator", () => {
 			let queryObject = simpleQuery as any;
-			let s = pq.bodyHelper(queryObject["WHERE"]);
+			let s = bd.bodyHelper(queryObject["WHERE"]);
 			expect(s).to.eql("(section.avg > 97)");
 		});
 
 		it("integration test: LOGIC + BODY + mComparator", () => {
 			let queryObject = complexMcompQuery as any;
-			let s = pq.bodyHelper(queryObject["WHERE"]);
+			let s = bd.bodyHelper(queryObject["WHERE"]);
 			expect(s).to.eql("(((section.avg > 90) && (section.avg < 99)) || (section.avg === 95))");
 		});
 
@@ -115,35 +119,85 @@ describe("Tests for performQueryHelper", () => {
 			console.log(queryObject);
 			console.log(queryObject[key]);
 
-			let s = pq.sComparatorHelper(queryObject[key], key);
+			let s = bd.sComparatorHelper(queryObject[key], key);
 			console.log(s);
 			expect(s).to.eql('(section.dept === "adhe")');
 		});
 
 		it("integration test: LOGIC + BODY + sComparator", () => {
 			let queryObject = complexScompQuery as any;
-			let s = pq.bodyHelper(queryObject["WHERE"]);
+			let s = bd.bodyHelper(queryObject["WHERE"]);
 			console.log(s);
 			expect(s).to.eql(
 				String.raw`(((section.id === "123") && (section.instructor === "bam")) || ` +
-					String.raw`(section.dept === "adhe") || (section.dept.endsWith("sci")) || ` +
-					String.raw`(section.dept.startsWith("dsc")) || (section.dept.includes("dh")))`
+				String.raw`(section.dept === "adhe") || (section.dept.endsWith("sci")) || ` +
+				String.raw`(section.dept.startsWith("dsc")) || (section.dept.includes("dh")))`
 			);
 		});
 	});
 
-	// describe("performQueryHelper", () => {
-	// 	it("should reject for empty, or incomplete queries", () => {
-	// 		expect(pq.queryValidator("")).to.eql(false);
-	// 		expect(pq.queryValidator(null)).to.eql(false);
-	// 		expect(pq.queryValidator(undefined)).to.eql(false);
-	// 		expect(pq.queryValidator(0)).to.eql(false);
-	// 		expect(pq.queryValidator(noOptionsQuery)).to.eql(false);
-	// 		expect(pq.queryValidator(noWhereQuery)).to.eql(false);
-	// 		expect(pq.queryValidator(simpleQuery)).to.eql(true);
-	// 	});
-	// });
+	describe("empty where", () => {
+		it("empty where should return empty string", () => {// let queryObject = emptyWhereQuery as any;
+			// let queryObject = complexScompQuery as any;
+			let queryObject = emptyWhereQuery as any;
+			console.log(queryObject["WHERE"]);
+			expect(queryObject["WHERE"]).to.eql({});
+			expect(JSON.stringify(queryObject["WHERE"])).to.eql("{}");
+			let s = bd.bodyHelper(queryObject["WHERE"]);
+			expect(s).to.eql("");
+		});
+
+		it("", () => {// let queryObject = emptyWhereQuery as any;
+			// let queryObject = complexScompQuery as any;
+			let queryObject = emptyWhereQuery as any;
+			let s = bd.bodyHelper(queryObject["WHERE"]);
+			expect(s).to.eql("");
+			console.log(queryObject["NOTHERE"]);
+		});
+
+
+	});
+
+	describe("transformation", async () => {
+		it("grouping", async () => {
+			let facade = new InsightFacade();
+			let datas = await facade.listDatasets();
+			let parsedJSON = await pq.getSections("sections");
+			let filteredJSON = pq.filterWhere(parsedJSON, emptyWhereQuery);
+
+			let groupedJSON = filteredJSON.reduce((accumulator: any, element: any) => {
+				let key = element["title"]; // + "_" + element.instructor;
+				accumulator[key] = (accumulator[key] || []).concat(element);
+				return accumulator;
+			}, {});
+
+			let result: {[key: string]: any} = {};
+
+			for (let key in groupedJSON) {
+				let group = groupedJSON[key];
+				let sum = group.reduce((acc: any, element: any) => {
+					return acc + element["avg"];
+				}, 0);
+				let avg = sum / group.length;
+				result[key] = {avg};
+			}
+			console.log(result);
+		});
+
+	});
 });
+
+// describe("performQueryHelper", () => {
+// 	it("should reject for empty, or incomplete queries", () => {
+// 		expect(pq.queryValidator("")).to.eql(false);
+// 		expect(pq.queryValidator(null)).to.eql(false);
+// 		expect(pq.queryValidator(undefined)).to.eql(false);
+// 		expect(pq.queryValidator(0)).to.eql(false);
+// 		expect(pq.queryValidator(noOptionsQuery)).to.eql(false);
+// 		expect(pq.queryValidator(noWhereQuery)).to.eql(false);
+// 		expect(pq.queryValidator(simpleQuery)).to.eql(true);
+// 	});
+// });
 
 // describe("Integration tests", () => {
 // 	before(() => {

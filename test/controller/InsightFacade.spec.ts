@@ -507,6 +507,28 @@ describe("InsightFacade", function () {
 		folderTest<Input, Output, Error>(
 			"Dynamic InsightFacade PerformQuery tests",
 			async (input) => await facade.performQuery(input),
+			"./test/resources/queries2",
+			{
+				assertOnResult: (actual, expected) => {
+					expect(actual).to.have.deep.members(expected);
+				},
+				errorValidator: (error): error is Error => error === "ResultTooLargeError" || error === "InsightError",
+				assertOnError: (actual, expected) => {
+					if (expected === "InsightError") {
+						expect(actual).to.be.instanceof(InsightError);
+					} else if (expected === "ResultTooLargeError") {
+						expect(actual).to.be.instanceof(ResultTooLargeError);
+					} else {
+						// this should be unreachable
+						expect.fail("UNEXPECTED ERROR");
+					}
+				},
+			}
+		);
+
+		folderTest<Input, Output, Error>(
+			"Dynamic InsightFacade PerformQuery tests",
+			async (input) => await facade.performQuery(input),
 			"./test/resources/queries",
 			{
 				assertOnResult: (actual, expected) => {
