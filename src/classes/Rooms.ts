@@ -107,7 +107,7 @@ export class Rooms {
 	}
 
 	public setSeats(seats: number) {
-		this.seats = seats;
+		this.seats = Number(seats);
 		this.counter++;
 	}
 

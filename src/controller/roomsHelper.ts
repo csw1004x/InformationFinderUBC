@@ -6,7 +6,6 @@ import {BuildingList} from "../classes/BuildingList";
 import JSZip from "jszip";
 import * as http from "http";
 import {parse} from "parse5";
-import {InsightError} from "./IInsightFacade";
 
 export function getRoom(document: any, building: Building, dataList: RoomsList) {
 	for (let child in document.childNodes) {
@@ -50,8 +49,8 @@ export function findTDRoom(document: any, room: Rooms){
 			}
 
 			if (document.childNodes[child].attrs[0].value === "views-field views-field-field-room-capacity") {
-				tmp = document.childNodes[child].childNodes[0].value.trim();
-				room.setSeats(tmp);
+				let tmpNum: number = Number(document.childNodes[child].childNodes[0].value.trim());
+				room.setSeats(tmpNum);
 			}
 
 			if (document.childNodes[child].attrs[0].value === "views-field views-field-field-room-furniture") {
@@ -99,12 +98,11 @@ export function findTable(document: any): boolean {
 
 
 // Iterate and print all the tr and td
-export function findTR(document: any, buildingList: BuildingList): void {
+export async function findTR(document: any, buildingList: BuildingList): Promise<void> {
 	for (let child in document.childNodes) {
 		if (document.childNodes[child].nodeName === "tr") {
 			let building = new Building();
 			findTD(document.childNodes[child], building);
-			geoLocator(building, buildingList);
 			buildingList.pushBuilding(building);
 		} else {
 			findTR(document.childNodes[child], buildingList);
@@ -112,16 +110,12 @@ export function findTR(document: any, buildingList: BuildingList): void {
 	}
 }
 
-export function geoLocator(building: Building, buildingList: BuildingList){
-	// url-encode the address
-	const encodedAddress = encodeURIComponent(building.getAddress());
-	// set up your Geocoding url
-	const geoUrl = "http://cs310.students.cs.ubc.ca:11316/api/v1/project_team200/" + encodedAddress;
-	// console.log(geoUrl);
+export function geoLocator(building: Building): Promise<any> {
+	return new Promise((resolve, reject) => {
+		const encodedAddress = encodeURIComponent(building.getAddress());
+		const geoUrl = "http://cs310.students.cs.ubc.ca:11316/api/v1/project_team200/" + encodedAddress;
 
-	try{
 		http.get(geoUrl, (res) => {
-
 			res.setEncoding("utf8");
 			let rawData = "";
 			res.on("data", (chunk) => {
@@ -129,24 +123,16 @@ export function geoLocator(building: Building, buildingList: BuildingList){
 			});
 			res.on("end", () => {
 				try {
-					const parsedData = JSON.parse(rawData);
-					// convert from parsed json data into number
-					const lat = Number(parsedData.lat);
-					const lon = Number(parsedData.lon);
-					// console.log("yes");
-					building.setLat(lat);
-					building.setLon(lon);
+					const geocodingData = JSON.parse(rawData);
+					return resolve(geocodingData);
 				} catch (e) {
-					// console.error(e.message);
+					reject(e);
 				}
 			});
 		}).on("error", (e) => {
-			building.setLat(404);
-			building.setLon(404);
+			return resolve("404");
 		});
-	} catch (e) {
-		// console.error(e.message);
-	}
+	});
 }
 
 // write a function that finds the td and prints out the class names of each td using .attrs
@@ -170,8 +156,10 @@ export function findTD(document: any, building: Building): void {
 
 			// get the value of href which is the link to the building
 			if (document.childNodes[child].attrs[0].value === "views-field views-field-nothing") {
-				tmp = document.childNodes[child].childNodes[1].attrs[0].value;
-				building.setHref(tmp);
+				let tmpStr: string = document.childNodes[child].childNodes[1].attrs[0].value;
+				// replace the . at the start with http://students.ubc.ca/
+				tmpStr = tmpStr.replace(".", "http://students.ubc.ca");
+				building.setHref(tmpStr);
 			}
 		} else {
 			findTD(document.childNodes[child], building);
@@ -183,11 +171,13 @@ export async function helper(files: JSZip.JSZipObject[], buildingList: BuildingL
 	// Use Promise.all to process all files in parallel and store the results in an array
 	const fileContentsPromises = files.map(async (file) => {
 		try {
+
+
 			const fileContent = await file.async("string");
 			const folderFile = parse(fileContent);
 
 			for (let building of buildingList.getBuildingList()) {
-				if (building.getHref() === "./" + file.name) {
+				if (building.getHref() === "http://students.ubc.ca/" + file.name) {
 					getRoom(folderFile, building, dataList);
 				}
 			}
@@ -199,4 +189,19 @@ export async function helper(files: JSZip.JSZipObject[], buildingList: BuildingL
 	await Promise.all(fileContentsPromises);
 }
 
+export async function geoHelper(buildingList: BuildingList) {
+	// Make an await promise all to get the lat and lon for each building using geolocator
+	const buildingListArray = buildingList.getBuildingList();
+	const geoPromises = buildingListArray.map(async (building) => {
+		let tmp = await geoLocator(building);
+		if (tmp === "404") {
+			buildingList.removeBuilding(building);
+		} else {
+			building.setLat(tmp.lat);
+			building.setLon(tmp.lon);
+		}
+	});
+
+	await Promise.all(geoPromises);
+}
 
