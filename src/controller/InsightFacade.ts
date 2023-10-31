@@ -18,7 +18,8 @@ import {Building} from "../classes/Building";
 import {BuildingList} from "../classes/BuildingList";
 import {Rooms} from "../classes/Rooms";
 import {parse} from "parse5";
-import {findTable, findTBody, geoLocator, helper} from "./roomsHelper";
+import {findTable, findTBody, geoHelper, geoLocator, helper} from "./roomsHelper";
+import {syncBuiltinESMExports} from "module";
 
 /**
  * This is the main programmatic entry point for the project.
@@ -81,12 +82,11 @@ export default class InsightFacade implements IInsightFacade {
 
 			findTBody(document, buildingList);
 
-			for (let building of buildingList.getBuildingList()) {
-				geoLocator(building, buildingList);
-				if (building.getLat() === 404 && building.getLon() === 404) {
-					buildingList.removeBuilding(building);
-				}
-			}
+			await geoHelper(buildingList);
+
+			// for (let building of buildingList.getBuildingList()) {
+			// 	console.log(building);
+			// }
 
 			// go to the folder that contains the html files
 			const folder = zip.folder("campus/discover/buildings-and-classrooms");
@@ -224,7 +224,7 @@ export default class InsightFacade implements IInsightFacade {
 				} catch (error) {
 					// Handle errors here, or skip as needed
 				}
-				// console.log(id, kind, numRows);
+				console.log(id, kind, numRows);
 				// Check if numRows is greater than 0 before pushing to the datasetList
 				if (numRows > 0) {
 					datasetList.push({id, kind, numRows});
