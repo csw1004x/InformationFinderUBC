@@ -282,12 +282,12 @@ export function sortQuery(passedList: any, knownQuery: any): any {
 			let direction: number = orderColumn["dir"] === "DOWN" ? 1 : -1;
 			// comparing
 			for (let key of orderColumn["keys"]) {
-				console.log("a[key]: " + a[key] + " < b[key]: " + b[key] + " = " + String(a[key] < b[key]));
+				// console.log("a[key]: " + a[key] + " < b[key]: " + b[key] + " = " + String(a[key] < b[key]));
 				if (a[key] < b[key]) {
-					console.log("return: " + direction);
+					// console.log("return: " + direction);
 					return direction;
 				} else if (a[key] > b[key]) {
-					console.log("return: " + (direction * -1));
+					// console.log("return: " + (direction * -1));
 					return -direction;
 				}
 			}
