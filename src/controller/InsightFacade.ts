@@ -225,7 +225,7 @@ export default class InsightFacade implements IInsightFacade {
 				} catch (error) {
 					// Handle errors here, or skip as needed
 				}
-				console.log(id, kind, numRows);
+				// console.log(id, kind, numRows);
 				// Check if numRows is greater than 0 before pushing to the datasetList
 				if (numRows > 0) {
 					datasetList.push({id, kind, numRows});
@@ -253,7 +253,7 @@ export default class InsightFacade implements IInsightFacade {
 			let idString: string = pq.getID(knownQuery);
 			// console.log(2);
 			// parsedJSON: contains the JSONs that match idString
-			let parsedJSON = await pq.getSections(idString);
+			let parsedJSON = await pq.getJSON(idString);
 			// console.log(3);
 			// filteredJSON: contains the JSONs that passed WHERE
 			let whereFilteredJSON = pq.filterWhere(parsedJSON, knownQuery);

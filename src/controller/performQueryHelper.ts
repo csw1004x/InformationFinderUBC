@@ -27,12 +27,11 @@ export function queryValidator(query: unknown): boolean {
 	return true;
 }
 
-export async function getSections(searchID: string) {
+export async function getJSON(searchID: string) {
 	let dataDir = "./data";
 	await fs.ensureDir(dataDir);
 	let facade = new InsightFacade();
 	let datas = await facade.listDatasets();
-
 	// if corresponding data is found, load it to parsedJSON
 	let parsedJSON;
 	for (let data of datas) {
@@ -79,12 +78,10 @@ export function getID(query: any): string {
 function getIDOptions(query: any, idSet: Set<string>): void {
 	for (let key of query) {
 		let keyList = key.split("_");
-		// console.log("keyList: " + keyList);
 		if (keyList.length > 1 && validSections.includes(keyList[0])) {
 			idSet.add(keyList[0]);
 		}
 	}
-	// console.log(idSet.values());
 }
 
 function getIDBody(query: any, idSet: Set<string>): string {
@@ -173,14 +170,21 @@ export function filterWhere(parsedJSON: any, knownQuery: any): any[] {
 	}
 
 	let queryMatches = new Function("element", ifCondition);
-
 	let filteredJSON = [];
 
 	// filter based on the WHERE conditions
 	// filteredJSON contains the JSONs that passed WHERE
-	for (let section of parsedJSON.sectionList) {
-		if (queryMatches(section)) {
-			filteredJSON.push(section);
+	if (Object.keys(parsedJSON)[0] === "roomsList") {
+		for (let room of parsedJSON.roomsList) {
+			if (queryMatches(room)) {
+				filteredJSON.push(room);
+			}
+		}
+	} else if (Object.keys(parsedJSON)[0] === "sectionList") {
+		for (let section of parsedJSON.sectionList) {
+			if (queryMatches(section)) {
+				filteredJSON.push(section);
+			}
 		}
 	}
 	return filteredJSON;
@@ -226,7 +230,6 @@ export function transform(filteredJSON: any, knownQueryTransformations: any): an
 	}
 
 	let appliedJSON: any[] = [];
-
 	// GROUP
 	let groupedJSON = tf.groupHelper(filteredJSON, knownQueryTransformations["GROUP"]);
 
@@ -244,7 +247,6 @@ export function transform(filteredJSON: any, knownQueryTransformations: any): an
 		let finalResults = {...result, ...tf.applyHelper(group, knownQueryTransformations["APPLY"])};
 		appliedJSON.push(finalResults);
 	}
-
 	// console.log(appliedJSON);
 	// return filteredJSON;
 	return appliedJSON;
@@ -256,16 +258,13 @@ export function sortQuery(passedList: any, knownQuery: any): any {
 	if (orderColumn === undefined) {
 		return passedList;
 	}
-	// console.log(21);
 	// sort condition checks
 	if (passedList.length <= 1) {
 		return passedList;
 	}
 	// console.log(passedList);
-	// console.log(22);
 	// case 1 - sort by single column
 	if (typeof orderColumn === "string") {
-		// console.log(23);
 		if (passedList[0][orderColumn] === undefined) {
 			throw new InsightError();
 		}
@@ -273,7 +272,6 @@ export function sortQuery(passedList: any, knownQuery: any): any {
 
 		// case 2 - sort by more descriptions
 	} else if (orderColumn["dir"] && orderColumn["keys"]) {
-		// console.log(24);
 		// ensuring all order keys are in columns
 		for (let key of orderColumn["keys"]) {
 			if (passedList[0][key] === undefined) {
@@ -281,13 +279,16 @@ export function sortQuery(passedList: any, knownQuery: any): any {
 			}
 		}
 		passedList.sort((a: any, b: any) => {
-			let direction: number = orderColumn["dir"] === "DOWN" ? -1 : 1;
+			let direction: number = orderColumn["dir"] === "DOWN" ? 1 : -1;
 			// comparing
 			for (let key of orderColumn["keys"]) {
+				// console.log("a[key]: " + a[key] + " < b[key]: " + b[key] + " = " + String(a[key] < b[key]));
 				if (a[key] < b[key]) {
+					// console.log("return: " + direction);
 					return direction;
-				} else {
-					return direction * -1;
+				} else if (a[key] > b[key]) {
+					// console.log("return: " + (direction * -1));
+					return -direction;
 				}
 			}
 			return 0;
@@ -295,6 +296,5 @@ export function sortQuery(passedList: any, knownQuery: any): any {
 	} else {
 		throw new InsightError();
 	}
-
 	return passedList;
 }
