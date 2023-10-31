@@ -50,7 +50,7 @@ export function findTDRoom(document: any, room: Rooms){
 
 			if (document.childNodes[child].attrs[0].value === "views-field views-field-field-room-capacity") {
 				let tmpNum: number = Number(document.childNodes[child].childNodes[0].value.trim());
-				room.setSeats(tmp);
+				room.setSeats(tmpNum);
 			}
 
 			if (document.childNodes[child].attrs[0].value === "views-field views-field-field-room-furniture") {
