@@ -225,7 +225,7 @@ export default class InsightFacade implements IInsightFacade {
 				} catch (error) {
 					// Handle errors here, or skip as needed
 				}
-				console.log(id, kind, numRows);
+				// console.log(id, kind, numRows);
 				// Check if numRows is greater than 0 before pushing to the datasetList
 				if (numRows > 0) {
 					datasetList.push({id, kind, numRows});
