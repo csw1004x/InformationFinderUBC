@@ -26,7 +26,13 @@ export function findTRRoom(document: any, building: Building, dataList: RoomsLis
 			room.setAddress(building.getAddress());
 			room.setFullName(building.getFullName());
 			room.setShortName(building.getShortName());
-			room.setHref(building.getHref());
+			let tmpHRef = building.getHref();
+			let tmpEnding = building.getShortName() + "-" + room.getNumber();
+			// replace the end of tmpHREF with tmpEnding
+			tmpHRef = tmpHRef.replace(building.getShortName(), tmpEnding);
+			// remove the .htm at the end of tmpHREF
+			tmpHRef = tmpHRef.replace(".htm", "");
+			room.setHref(tmpHRef);
 			room.setLat(building.getLat());
 			room.setLon(building.getLon());
 			room.setName(room.getShortName() + "_" + room.getNumber());
