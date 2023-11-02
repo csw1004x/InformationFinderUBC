@@ -27,7 +27,7 @@ export function findTRRoom(document: any, building: Building, dataList: RoomsLis
 			room.setFullName(building.getFullName());
 			room.setShortName(building.getShortName());
 			let tmpHRef = building.getHref();
-			let tmpEnding = building.getShortName() + "-" + room.getNumber();
+			let tmpEnding = "room/" + building.getShortName() + "-" + room.getNumber();
 			// replace the end of tmpHREF with tmpEnding
 			tmpHRef = tmpHRef.replace(building.getShortName(), tmpEnding);
 			// remove the .htm at the end of tmpHREF
