@@ -1,6 +1,7 @@
-import express, {Application, Request, Response} from "express";
+import express, {Application, Express, Request, Response} from "express";
 import * as http from "http";
 import cors from "cors";
+import * as sh from "./ServerHelper";
 
 export default class Server {
 	private readonly port: number;
@@ -11,14 +12,13 @@ export default class Server {
 		console.info(`Server::<init>( ${port} )`);
 		this.port = port;
 		this.express = express();
-
 		this.registerMiddleware();
 		this.registerRoutes();
 
 		// NOTE: you can serve static frontend files in from your express server
 		// by uncommenting the line below. This makes files in ./frontend/public
 		// accessible at http://localhost:<port>/
-		// this.express.use(express.static("./frontend/public"))
+		// this.express.use(express.static("./frontend/public"));
 	}
 
 	/**
@@ -82,30 +82,34 @@ export default class Server {
 	private registerRoutes() {
 		// This is an example endpoint this you can invoke by accessing this URL in your browser:
 		// http://localhost:4321/echo/hello
-		this.express.get("/echo/:msg", Server.echo);
+		this.express.get("/echo/:msg", sh.echo);
 
 		// TODO: your other endpoints should go here
-
+		const app = this.express;
+		app.put("/dataset/:id/:kind", sh.putDataset);
+		app.delete("/dataset/:id", sh.deleteDataset);
+		app.post("/query", sh.queryDataset);
+		app.get("/dataset", sh.getDataset);
 	}
 
 	// The next two methods handle the echo service.
 	// These are almost certainly not the best place to put these, but are here for your reference.
 	// By updating the Server.echo function pointer above, these methods can be easily moved.
-	private static echo(req: Request, res: Response) {
-		try {
-			console.log(`Server::echo(..) - params: ${JSON.stringify(req.params)}`);
-			const response = Server.performEcho(req.params.msg);
-			res.status(200).json({result: response});
-		} catch (err) {
-			res.status(400).json({error: err});
-		}
-	}
-
-	private static performEcho(msg: string): string {
-		if (typeof msg !== "undefined" && msg !== null) {
-			return `${msg}...${msg}`;
-		} else {
-			return "Message not provided";
-		}
-	}
+	// private static echo(req: Request, res: Response) {
+	// 	try {
+	// 		console.log(`Server::echo(..) - params: ${JSON.stringify(req.params)}`);
+	// 		const response = Server.performEcho(req.params.msg);
+	// 		res.status(200).json({result: response});
+	// 	} catch (err) {
+	// 		res.status(400).json({error: err});
+	// 	}
+	// }
+	//
+	// private static performEcho(msg: string): string {
+	// 	if (typeof msg !== "undefined" && msg !== null) {
+	// 		return `${msg}...${msg}`;
+	// 	} else {
+	// 		return "Message not provided";
+	// 	}
+	// }
 }
