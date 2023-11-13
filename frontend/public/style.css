@@ -1,0 +1,64 @@
+.panel_button {
+    border: none;
+    color: black;
+    padding: 15px 15px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    width: 100%;
+
+}
+
+.panel_button:hover {
+    background-color: grey;
+    cursor: pointer;
+}
+
+nav {
+    background-color: #333;
+    padding: 10px;
+}
+  
+nav_list {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+  
+nav_link {
+    display: inline;
+    margin-right: 20px;
+}
+  
+a {
+    text-decoration: none;
+    color: white;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    height: 100vh;
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: 20vw 1fr; /* 1fr means one fraction unit, taking the remaining space */
+    grid-gap: 20px;
+    padding: 20px;
+    height: 100vh;
+
+}
+
+.left-panel {
+    background-color: #f0f0f0;
+    padding: 10px;
+    height: 100vh;
+    max-width: 200px; /* Maximum width */
+}
+
+.main-section {
+    padding: 10px;
+    height: 100vh;
+}

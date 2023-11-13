@@ -26,8 +26,7 @@ export async function putDataset(req: Request<any>, res: Response): Promise<void
 	let params = req.params;
 	let rawZip = req.body;
 
-    // TODO: convert to base64
-	facade.addDataset(params.id, rawZip, params.kind)
+	facade.addDataset(params.id, rawZip.toString("base64"), params.kind)
 		.then((arr: string[]) => {
 			res.status(200).json({result: arr});
 		})
@@ -37,7 +36,7 @@ export async function putDataset(req: Request<any>, res: Response): Promise<void
 }
 
 export async function deleteDataset(req: Request<any>, res: Response): Promise<void> {
-	facade.removeDataset(req.body)
+	facade.removeDataset(req.params.id)
 		.then((str: string) => {
 			res.status(200).json({result: str});
 		})
