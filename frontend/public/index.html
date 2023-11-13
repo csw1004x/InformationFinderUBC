@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
+    <title>InsightUBC</title>
+    <link href="/style.css" rel="stylesheet"/>
+</head>
+<body>
+    <nav>
+        <nav_list>
+          <nav_link><a href="http://localhost:4321/">Home</a></nav_link>
+          <!-- <nav_link><a href="#">Query</a></nav_link>
+          <nav_link><a href="#">Dataset</a></nav_link> -->
+        </nav_list>
+    </nav>
+    <div class="grid-container">
+    <div class="left-panel">
+        <button id="show-datasets-button" class="panel_button">Show Datasets</button>
+        <button id="upload-datasets-button" class="panel_button">Upload Datasets</button>
+        <button id="remove-datasets-button" class="panel_button">Remove Datasets</button>
+        <button id="click-me-button" class="panel_button">Click Me!</button>
+    </div>
+    <div class="main-section">
+        <div id="defaultContainer">
+            "HELLO THIS IS THE LANDING PAGE"
+        </div>
+        <div id="contentContainer"></div>
+        <div id="tableContainer"></div>
+    </div>
+    </div>
+
+<script type="text/javascript" src="/frontend.js"></script>
+<script type="text/javascript" src="/showDatasets.js"></script>
+<script type="text/javascript" src="/uploadDatasets.js"></script>
+<script type="text/javascript" src="/removeDatasets.js"></script>
+</body>
+</html>
