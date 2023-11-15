@@ -41,7 +41,7 @@ function renderDeleteForm() {
         form.appendChild(document.createElement("br"));
         form.appendChild(document.createElement("br"));
         form.appendChild(submitButton);
-    
+
         // Append form to the body
         contentContainer.appendChild(headerText);
         contentContainer.appendChild(form);
@@ -49,7 +49,7 @@ function renderDeleteForm() {
 
 function deleteDatasets() {
     const idInput = document.getElementById('idInput').value;
-    
+
     const url = `/dataset/${idInput}`;
     // console.log(url);
 
@@ -61,5 +61,5 @@ function deleteDatasets() {
         console.log("ERROR: ", error);
     })
 
-    // alert(`Test - Submitted to: ${url}`);
+    alert(`Test - Deletion Submitted to: ${url}`);
 }

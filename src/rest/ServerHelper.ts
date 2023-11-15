@@ -30,7 +30,7 @@ export async function putDataset(req: Request<any>, res: Response): Promise<void
 		.then((arr: string[]) => {
 			res.status(200).json({result: arr});
 		})
-		.catch((err: InsightError) => {
+		.catch((err: Error) => {
 			res.status(400).json({error: err});
 		});
 }
@@ -45,15 +45,20 @@ export async function deleteDataset(req: Request<any>, res: Response): Promise<v
 		})
 		.catch((err: NotFoundError) => {
 			res.status(404).json({error: err});
+		})
+		.catch((err: Error) => {
+			res.status(408).json({error: err});
 		});
 }
 
 export async function queryDataset(req: Request<any>, res: Response): Promise<void> {
-	facade.performQuery(req.body)
+	let query = req.body;
+
+	facade.performQuery(query)
 		.then((arr: InsightResult[]) => {
 			res.status(200).json({result: arr});
 		})
-		.catch((err: any) => {
+		.catch((err: Error) => {
 			res.status(400).json({error: err});
 		});
 }
