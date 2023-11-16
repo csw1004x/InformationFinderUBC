@@ -4,6 +4,7 @@ import InsightFacade from "../controller/InsightFacade";
 
 const facade: InsightFacade = new InsightFacade();
 
+// /echo/:msg
 export function echo(req: Request, res: Response): void {
 	try {
 		console.log(`Server::echo(..) - params: ${JSON.stringify(req.params)}`);
@@ -22,6 +23,7 @@ export function performEcho(msg: string): string {
 	}
 }
 
+// /dataset/:id/:kind
 export async function putDataset(req: Request<any>, res: Response): Promise<void> {
 	let params = req.params;
 	let rawZip = req.body;
@@ -35,6 +37,7 @@ export async function putDataset(req: Request<any>, res: Response): Promise<void
 		});
 }
 
+// /dataset/:id
 export async function deleteDataset(req: Request<any>, res: Response): Promise<void> {
 	facade.removeDataset(req.params.id)
 		.then((str: string) => {
@@ -51,8 +54,10 @@ export async function deleteDataset(req: Request<any>, res: Response): Promise<v
 		});
 }
 
+// /query
 export async function queryDataset(req: Request<any>, res: Response): Promise<void> {
 	let query = req.body;
+	// console.log("Query Received: ", query);
 
 	facade.performQuery(query)
 		.then((arr: InsightResult[]) => {
@@ -63,6 +68,7 @@ export async function queryDataset(req: Request<any>, res: Response): Promise<vo
 		});
 }
 
+// /dataset
 export async function getDataset(req: Request<any>, res: Response): Promise<void> {
 	facade.listDatasets()
 		.then((arr: InsightDataset[]) => {

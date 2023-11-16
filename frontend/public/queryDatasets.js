@@ -49,23 +49,20 @@ function renderQueryForm() {
 
 function submitQueryForm() {
     const queryInput = document.getElementById('queryInput').value;
-    var jsonQuery = JSON.parse(queryInput);
-
-    console.log(jsonQuery)
-
     const url = `/query`;
-    // console.log(url);
 
     fetch(url, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(jsonQuery)})
+        body: queryInput
+    })
         .then(response => response.json())
         .then(data => renderTable("Queried Result", data.result))
-        .catch((error) => {console.log("ERROR: ", error);
-    })
+        .catch((error) => {
+            console.log("ERROR: ", error);
+        })
 
     alert(`Test - Query Submitted to: ${url}`);
 }

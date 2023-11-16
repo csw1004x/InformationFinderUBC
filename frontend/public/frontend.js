@@ -63,7 +63,7 @@ function jsonToHtmlTable(data) {
 		const row = body.insertRow();
 		Object.values(item).forEach(value => {
 			const cell = row.insertCell();
-			cell.textContent = value;
+			cell.textContent = value.length > 20 ? value.substring(0, 20) + '...' : value;
 		});
 	});
 
