@@ -4,6 +4,7 @@ import InsightFacade from "../controller/InsightFacade";
 
 const facade: InsightFacade = new InsightFacade();
 
+// /echo/:msg
 export function echo(req: Request, res: Response): void {
 	try {
 		console.log(`Server::echo(..) - params: ${JSON.stringify(req.params)}`);
@@ -22,6 +23,7 @@ export function performEcho(msg: string): string {
 	}
 }
 
+// /dataset/:id/:kind
 export async function putDataset(req: Request<any>, res: Response): Promise<void> {
 	let params = req.params;
 	let rawZip = req.body;
@@ -30,11 +32,12 @@ export async function putDataset(req: Request<any>, res: Response): Promise<void
 		.then((arr: string[]) => {
 			res.status(200).json({result: arr});
 		})
-		.catch((err: InsightError) => {
+		.catch((err: Error) => {
 			res.status(400).json({error: err});
 		});
 }
 
+// /dataset/:id
 export async function deleteDataset(req: Request<any>, res: Response): Promise<void> {
 	facade.removeDataset(req.params.id)
 		.then((str: string) => {
@@ -45,19 +48,27 @@ export async function deleteDataset(req: Request<any>, res: Response): Promise<v
 		})
 		.catch((err: NotFoundError) => {
 			res.status(404).json({error: err});
+		})
+		.catch((err: Error) => {
+			res.status(408).json({error: err});
 		});
 }
 
+// /query
 export async function queryDataset(req: Request<any>, res: Response): Promise<void> {
-	facade.performQuery(req.body)
+	let query = req.body;
+	// console.log("Query Received: ", query);
+
+	facade.performQuery(query)
 		.then((arr: InsightResult[]) => {
 			res.status(200).json({result: arr});
 		})
-		.catch((err: any) => {
+		.catch((err: Error) => {
 			res.status(400).json({error: err});
 		});
 }
 
+// /dataset
 export async function getDataset(req: Request<any>, res: Response): Promise<void> {
 	facade.listDatasets()
 		.then((arr: InsightDataset[]) => {
