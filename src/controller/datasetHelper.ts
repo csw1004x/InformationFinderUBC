@@ -21,6 +21,35 @@ export async function writeDataToDisk(dataList: any, id: string): Promise<void> 
 	}
 }
 
+// A function named addID that adds the list of ids into a .json file located in ./id_list
+export async function updateID(): Promise<string[]> {
+	// // check if ./id_list exists if not create it
+	// const dirPath = "./id_list";
+	// await fs.ensureDir(dirPath);
+	//
+	// // check if idList.json exists in ./id_list, if not create it, if it does, append the id to the list
+	// const filePath = "./id_list/idList.json";
+	let idList: string[] = [];
+
+	// go to ./data and parse the names of the files and remove the .json at the end
+	const dataPath = "./data";
+	let dataFiles: string[] = [];
+	try {
+		dataFiles = await fs.readdir(dataPath);
+	} catch (err) {
+		// console.error(`Error reading directory ${dataPath}: ${err}`);
+	}
+
+	for (let file of dataFiles) {
+		let tmp = file.split(".");
+		// add the id to the idList if it is not already in there
+		idList.push(tmp[0]);
+	}
+
+
+	return Promise.resolve(idList);
+}
+
 // A function named isDataValid that returns a boolean.
 // The function should take a JSON parsed object as an argument.
 // The function should return true if the JSON object contains all the fields we need.
