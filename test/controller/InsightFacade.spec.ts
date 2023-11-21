@@ -108,9 +108,7 @@ describe("InsightFacade", function () {
 				const result2 = await facade.addDataset("yes", tmp, InsightDatasetKind.Sections);
 				const result3 = await facade.addDataset("no", sections, InsightDatasetKind.Sections);
 
-				expect(result3[0]).to.equal("ubc1");
-				expect(result3[1]).to.equal("yes");
-				expect(result3[2]).to.equal("no");
+				expect(result3).to.have.members(["ubc1", "yes", "no"]);
 			} catch (err) {
 				expect.fail("Should not have rejected!");
 			}

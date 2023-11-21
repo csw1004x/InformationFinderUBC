@@ -20,6 +20,7 @@ import {Rooms} from "../classes/Rooms";
 import {parse} from "parse5";
 import {findTable, findTBody, geoHelper, geoLocator, helper} from "./roomsHelper";
 import {syncBuiltinESMExports} from "module";
+import {updateID} from "./datasetHelper";
 
 
 /**
@@ -35,6 +36,7 @@ export default class InsightFacade implements IInsightFacade {
 	public allID: string[] = [];
 
 	public async addDataset(id: string, content: string, kind: InsightDatasetKind): Promise<string[]> {
+		this.allID = await updateID();
 		if (!ds.isIDKindValid(id, kind)) {
 			return Promise.reject(new InsightError());
 		}
@@ -104,8 +106,8 @@ export default class InsightFacade implements IInsightFacade {
 				return Promise.reject(new InsightError());
 			}
 
-			this.allID.push(id);
 			await ds.writeDataToDisk(dataList, id);
+			this.allID = await updateID();
 		} catch (error) {
 			return Promise.reject(new InsightError());
 		}
@@ -146,17 +148,18 @@ export default class InsightFacade implements IInsightFacade {
 			if (dataList.getNumberOfSections() === 0) {
 				return Promise.reject(new InsightError());
 			}
-			this.allID.push(id);
 			// print allId
 			// console.log(this.allID);
 			await ds.writeDataToDisk(dataList, id);
+			this.allID = await updateID();
 		} catch (err) {
 			return Promise.reject(new InsightError());
 		}
 		return this.allID; // stub
 	}
 
-	public removeDataset(id: string): Promise<string> {
+	public async removeDataset(id: string): Promise<string> {
+		this.allID = await updateID();
 		// When id is invalid
 		if (
 			id.includes("_") ||
@@ -178,14 +181,13 @@ export default class InsightFacade implements IInsightFacade {
 
 		const filename = id + ".json";
 		const filePath = "./data/" + filename;
-		fs.remove(filePath).then().catch();
+		await fs.remove(filePath).then().catch();
 
 		// remove id from allID
 		const index = this.allID.indexOf(id);
 		if (index > -1) {
 			this.allID.splice(index, 1);
 		}
-
 		return Promise.resolve(id);
 	}
 
