@@ -159,6 +159,7 @@ export default class InsightFacade implements IInsightFacade {
 	}
 
 	public async removeDataset(id: string): Promise<string> {
+		this.allID = await updateID();
 		// When id is invalid
 		if (
 			id.includes("_") ||
