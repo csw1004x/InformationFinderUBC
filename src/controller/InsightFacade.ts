@@ -34,7 +34,6 @@ export default class InsightFacade implements IInsightFacade {
 	}
 
 	public allID: string[] = [];
-
 	public async addDataset(id: string, content: string, kind: InsightDatasetKind): Promise<string[]> {
 		this.allID = await updateID();
 		if (!ds.isIDKindValid(id, kind)) {
@@ -59,19 +58,54 @@ export default class InsightFacade implements IInsightFacade {
 		return this.allID;
 	}
 
+	public async changeData(dataId: string, uuid: string, id: string, title: string, professor: string, subject: string,
+		year: number, avg: number, pass: number, fail: number, audit: number): Promise<string> {
+
+		const filename = dataId + ".json";
+		const filePath = "./data/" + filename;
+		let data: any;
+		try {
+			const fileContents = await fs.readFile(filePath, "utf8");
+			data = JSON.parse(fileContents);
+		} catch (error) {
+			return Promise.reject(new InsightError());
+		}
+
+		for (let tmp of data.sectionList){
+			if (tmp.uuid === uuid) {
+				return Promise.reject(new InsightError());
+			}
+		}
+
+		let section: any = {};
+		section["uuid"] = uuid;
+		section["id"] = id;
+		section["title"] = title;
+		section["instructor"] = professor;
+		section["dept"] = subject;
+		section["year"] = year;
+		section["avg"] = avg;
+		section["pass"] = pass;
+		section["fail"] = fail;
+		section["audit"] = audit;
+		data.sectionList.push(section);
+
+		await this.removeDataset(dataId);
+		// write the data to the disk
+		await ds.writeDataToDisk(data, dataId);
+
+		return dataId;
+	}
+
 	public async addDatasetRooms(id: string, content: string, kind: InsightDatasetKind): Promise<string[]> {
 		try {
-			// Use parse5 to parse the HTML content
 			let buildingList: BuildingList = new BuildingList();
 			const zip = new JSZip();
 			let tmp = await zip.loadAsync(content, {base64: true});
 
 			const dataList = new RoomsList(id, kind);
 
-			// check if zip contains index.htm
 			const indexFile = await tmp.files["index.htm"].async("string");
-
-			// console.log(indexFile);
 
 			if (!indexFile) {
 				return Promise.reject(new InsightError());
@@ -87,11 +121,6 @@ export default class InsightFacade implements IInsightFacade {
 
 			await geoHelper(buildingList);
 
-			// for (let building of buildingList.getBuildingList()) {
-			// 	console.log(building);
-			// }
-
-			// go to the folder that contains the html files
 			const folder = zip.folder("campus/discover/buildings-and-classrooms");
 			// console.log(folder);
 			if (!folder) {
@@ -183,7 +212,6 @@ export default class InsightFacade implements IInsightFacade {
 		const filePath = "./data/" + filename;
 		await fs.remove(filePath).then().catch();
 
-		// remove id from allID
 		const index = this.allID.indexOf(id);
 		if (index > -1) {
 			this.allID.splice(index, 1);
@@ -227,8 +255,6 @@ export default class InsightFacade implements IInsightFacade {
 				} catch (error) {
 					// Handle errors here, or skip as needed
 				}
-				// console.log(id, kind, numRows);
-				// Check if numRows is greater than 0 before pushing to the datasetList
 				if (numRows > 0) {
 					datasetList.push({id, kind, numRows});
 				}
@@ -248,32 +274,15 @@ export default class InsightFacade implements IInsightFacade {
 	 */
 	public async performQuery(query: unknown): Promise<InsightResult[]> {
 		try {
-			// validate query body & initiate necessary variables
 			pq.queryValidator(query);
 			let knownQuery = query as any;
-			// console.log(1);
 			let idString: string = pq.getID(knownQuery);
-			// console.log(2);
-			// parsedJSON: contains the JSONs that match idString
 			let parsedJSON = await pq.getJSON(idString);
-			// console.log(3);
-			// filteredJSON: contains the JSONs that passed WHERE
 			let whereFilteredJSON = pq.filterWhere(parsedJSON, knownQuery);
-			// console.log(whereFilteredJSON);
-			// console.log(4);
-			// transformedJSON: Group and Apply has been applied
 			let transformedJSON = pq.transform(whereFilteredJSON, knownQuery["TRANSFORMATIONS"]);
-			// console.log(transformedJSON);
-			// console.log(5);
-			// passedList: contains InsightResults that passed Options
 			let passedList = pq.filterOptions(transformedJSON, knownQuery, idString);
-			// console.log(passedList);
-			// console.log(6);
-			// sort query results
 			let sortedList = pq.sortQuery(passedList, knownQuery);
-
 			return Promise.resolve(sortedList);
-
 		} catch (error) {
 			if (error instanceof ResultTooLargeError) {
 				return Promise.reject(new ResultTooLargeError());
@@ -283,3 +292,4 @@ export default class InsightFacade implements IInsightFacade {
 		}
 	}
 }
+
