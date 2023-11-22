@@ -75,3 +75,11 @@ export async function getDataset(req: Request<any>, res: Response): Promise<void
 			res.status(200).json({result: arr});
 		});
 }
+
+
+export async function updateSection(req: Request<any>, res: Response): Promise<void> {
+	facade.listDatasets()
+		.then((arr: InsightDataset[]) => {
+			res.status(200).json({result: arr});
+		});
+}
