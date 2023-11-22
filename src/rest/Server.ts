@@ -2,6 +2,7 @@ import express, {Application, Express, Request, Response} from "express";
 import * as http from "http";
 import cors from "cors";
 import * as sh from "./ServerHelper";
+import {updateSection} from "./ServerHelper";
 
 export default class Server {
 	private readonly port: number;
@@ -91,6 +92,7 @@ export default class Server {
 		app.put("/dataset/:id/:kind", sh.putDataset);
 		app.delete("/dataset/:id", sh.deleteDataset);
 		app.post("/query", sh.queryDataset);
+		app.put("/section/:dataid/:uuid/:id/:title/:instructor/:dept/:year/:avg/:pass/:fail/:audit", sh.updateSection);
 		app.get("/dataset", sh.getDataset);
 	}
 }

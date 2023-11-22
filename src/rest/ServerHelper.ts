@@ -75,3 +75,15 @@ export async function getDataset(req: Request<any>, res: Response): Promise<void
 			res.status(200).json({result: arr});
 		});
 }
+export async function updateSection(req: Request<any>, res: Response): Promise<void> {
+	let params = req.params;
+
+	facade.changeData(params.dataid, params.uuid, params.id, params.title, params.instructor, params.dept,
+		params.year, params.avg, params.pass, params.fail, params.audit)
+		.then((str: string) => {
+			res.status(200).json({result: str});
+		})
+		.catch((err: InsightError) => {
+			res.status(400).json({error: err.message});
+		});
+}

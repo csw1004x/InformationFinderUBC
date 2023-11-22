@@ -97,11 +97,9 @@ describe("InsightFacade", function () {
 		});
 
 		it("Test zip file", async function () {
-			const result = await facade.addDataset("ubc", sections, InsightDatasetKind.Sections);
-			console.log(await facade.listDatasets());
-			const result2 = await facade.changeData("ubc", "1", "1", "1", "1", "1", 1, 1, 1, 1, 1);
-			console.log(await facade.listDatasets());
-
+			await facade.addDataset("ubc", sections, InsightDatasetKind.Sections);
+			await facade.changeData("mace", "123", "123", "123", "123", "123", 123, 123, 123, 123, 123);
+			await facade.changeData("ubc", "123", "123", "123", "123", "123", 123, 123, 123, 123, 123);
 		});
 
 
