@@ -33,7 +33,7 @@ export async function putDataset(req: Request<any>, res: Response): Promise<void
 			res.status(200).json({result: arr});
 		})
 		.catch((err: Error) => {
-			res.status(400).json({error: err});
+			res.status(400).json({error: err.message});
 		});
 }
 
@@ -44,13 +44,13 @@ export async function deleteDataset(req: Request<any>, res: Response): Promise<v
 			res.status(200).json({result: str});
 		})
 		.catch((err: InsightError) => {
-			res.status(400).json({error: err});
+			res.status(400).json({error: err.message});
 		})
 		.catch((err: NotFoundError) => {
-			res.status(404).json({error: err});
+			res.status(404).json({error: err.message});
 		})
 		.catch((err: Error) => {
-			res.status(408).json({error: err});
+			res.status(408).json({error: err.message});
 		});
 }
 
@@ -64,7 +64,7 @@ export async function queryDataset(req: Request<any>, res: Response): Promise<vo
 			res.status(200).json({result: arr});
 		})
 		.catch((err: Error) => {
-			res.status(400).json({error: err});
+			res.status(400).json({error: err.message});
 		});
 }
 
