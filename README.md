@@ -5,6 +5,10 @@ Please keep your repository private.
 
 For information about the project, autotest, and the checkpoints, see the course webpage.
 
+## User Story Demos
+
+Data base modification: https://www.youtube.com/watch?v=5oa-f9UxqUU
+
 ## Configuring your environment
 
 To start using this project, you need to get your development environment configured so that you can build and execute the code.

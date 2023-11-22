@@ -35,7 +35,7 @@ function updateSectionForm() {
 	inputuuid.required = true;
 
 	const courseIdLabel = document.createElement('label');
-	courseIdLabel.textContent = 'UUID: ';
+	courseIdLabel.textContent = 'Course ID: ';
 	const inputCourse = document.createElement('input');
 	inputCourse.type = 'text';
 	inputCourse.id = 'courseInput';
@@ -43,44 +43,74 @@ function updateSectionForm() {
 	inputCourse.required = true;
 
 	const titleLabel = document.createElement('label');
-	titleLabel.textContent = 'UUID: ';
+	titleLabel.textContent = 'Title: ';
 	const inputTitle = document.createElement('input');
 	inputTitle.type = 'text';
 	inputTitle.id = 'titleInput';
 	inputTitle.name = 'titleInput';
 	inputTitle.required = true;
-	
+
 	const instructorLabel = document.createElement('label');
-	instructorLabel.textContent = 'UUID: ';
+	instructorLabel.textContent = 'Instructor: ';
 	const inputInstructor = document.createElement('input');
 	inputInstructor.type = 'text';
-	inputInstructor.id = 'instrutorInput';
-	inputInstructor.name = 'instrutorInput';
+	inputInstructor.id = 'instructorInput';
+	inputInstructor.name = 'instructorInput';
 	inputInstructor.required = true;
-	
+
 	const deptLabel = document.createElement('label');
-	deptLabel.textContent = 'UUID: ';
+	deptLabel.textContent = 'Dept: ';
 	const inputDept = document.createElement('input');
 	inputDept.type = 'text';
-	inputDept.id = 'instrutorInput';
-	inputDept.name = 'instrutorInput';
+	inputDept.id = 'deptInput';
+	inputDept.name = 'deptInput';
 	inputDept.required = true;
 
-	// Create File Input
-	const fileLabel = document.createElement('label');
-	fileLabel.textContent = 'File: ';
-	const inputFile = document.createElement('input');
-	inputFile.type = 'file';
-	inputFile.id = 'fileInput';
-	inputFile.name = 'fileInput';
-	inputFile.accept = '.zip';
-	inputFile.required = true;
+	const yearLabel = document.createElement('label');
+	yearLabel.textContent = 'Year: ';
+	const inputYear = document.createElement('input');
+	inputYear.type = 'number';
+	inputYear.id = 'yearInput';
+	inputYear.name = 'yearInput';
+	inputYear.required = true;
+
+	const avgLabel = document.createElement('label');
+	avgLabel.textContent = 'Average: ';
+	const inputAvg = document.createElement('input');
+	inputAvg.type = 'number';
+	inputAvg.id = 'avgInput';
+	inputAvg.name = 'avgInput';
+	inputAvg.required = true;
+
+	const passLabel = document.createElement('label');
+	passLabel.textContent = 'Pass: ';
+	const inputPass = document.createElement('input');
+	inputPass.type = 'number';
+	inputPass.id = 'passInput';
+	inputPass.name = 'passInput';
+	inputPass.required = true;
+
+	const failLabel = document.createElement('label');
+	failLabel.textContent = 'Fail: ';
+	const inputFail = document.createElement('input');
+	inputFail.type = 'number';
+	inputFail.id = 'failInput';
+	inputFail.name = 'failInput';
+	inputFail.required = true;
+
+	const auditLabel = document.createElement('label');
+	auditLabel.textContent = 'Audit: ';
+	const inputAudit = document.createElement('input');
+	inputAudit.type = 'number';
+	inputAudit.id = 'auditInput';
+	inputAudit.name = 'auditInput';
+	inputAudit.required = true;
 
 	// Create submit button
 	const submitButton = document.createElement('button');
 	submitButton.type = 'button'; // Change to 'submit' if you want to submit the form
-	submitButton.textContent = 'Submit';
-	submitButton.addEventListener('click', submitForm);
+	submitButton.textContent = 'Add';
+	submitButton.addEventListener('click', submitUserStoryTwoForm);
 
 	const lineBreak = document.createElement('br');
 
@@ -89,12 +119,44 @@ function updateSectionForm() {
 	form.appendChild(inputID);
 	form.appendChild(document.createElement("br"));
 	form.appendChild(document.createElement("br"));
+	form.appendChild(uuidLabel);
+	form.appendChild(inputuuid);
+	form.appendChild(document.createElement("br"));
+	form.appendChild(document.createElement("br"));
+	form.appendChild(courseIdLabel);
+	form.appendChild(inputCourse);
+	form.appendChild(document.createElement("br"));
+	form.appendChild(document.createElement("br"));
+	form.appendChild(titleLabel);
+	form.appendChild(inputTitle);
+	form.appendChild(document.createElement("br"));
+	form.appendChild(document.createElement("br"));
+	form.appendChild(instructorLabel);
+	form.appendChild(inputInstructor);
+	form.appendChild(document.createElement("br"));
+	form.appendChild(document.createElement("br"));
 	form.appendChild(deptLabel);
 	form.appendChild(inputDept);
 	form.appendChild(document.createElement("br"));
 	form.appendChild(document.createElement("br"));
-	form.appendChild(fileLabel);
-	form.appendChild(inputFile);
+	form.appendChild(yearLabel);
+	form.appendChild(inputYear);
+	form.appendChild(document.createElement("br"));
+	form.appendChild(document.createElement("br"));
+	form.appendChild(avgLabel);
+	form.appendChild(inputAvg);
+	form.appendChild(document.createElement("br"));
+	form.appendChild(document.createElement("br"));
+	form.appendChild(passLabel);
+	form.appendChild(inputPass);
+	form.appendChild(document.createElement("br"));
+	form.appendChild(document.createElement("br"));
+	form.appendChild(failLabel);
+	form.appendChild(inputFail);
+	form.appendChild(document.createElement("br"));
+	form.appendChild(document.createElement("br"));
+	form.appendChild(auditLabel);
+	form.appendChild(inputAudit);
 	form.appendChild(document.createElement("br"));
 	form.appendChild(document.createElement("br"));
 	form.appendChild(submitButton);
@@ -105,29 +167,34 @@ function updateSectionForm() {
 }
 
 function submitUserStoryTwoForm() {
-	const deptID = document.getElementById('department_id').value;
-	const url = `/query`;
+	const idInput = document.getElementById('idInput').value;
+	const uuidInput = document.getElementById('uuidInput').value;
+	const courseInput = document.getElementById('courseInput').value;
+	const titleInput = document.getElementById('titleInput').value;
+	const instructorInput = document.getElementById('instructorInput').value;
+	const deptInput = document.getElementById('deptInput').value;
+	const yearInput = document.getElementById('yearInput').value;
+	const avgInput = document.getElementById('avgInput').value;
+	const passInput = document.getElementById('passInput').value;
+	const failInput = document.getElementById('failInput').value;
+	const auditInput = document.getElementById('auditInput').value;
 
+	const url = `/section/${idInput}/${uuidInput}/${courseInput}/${titleInput}/${instructorInput}/${deptInput}/${yearInput}/${avgInput}/${passInput}/${failInput}/${auditInput}`;
+	///section/:dataid/:uuid/:id/:title/:instructor/:dept/:year/:avg/:pass/:fail/:audit
 
 	fetch(url, {
 		method: 'PUT',
 		headers: {
 			'Content-Type': 'application/json',
-		},
-		body: queryInput
+		}
+	}).then((response)=> {
+		if(!response.ok) {
+			alert("No such Dataset or Section uuid is already in dataset. Try again.");
+		} else {
+			alert(`Successfully added section.`);
+		}
+	}).catch((error) => {
+		alert("No such Dataset or Section uuid is already in dataset. Try again.");
 	})
-		.then(response => response.json())
-		.then((data) => {
-			// console.log(data.result.length);
-			if (data.result.length < 1) {
-				updateSectionForm();
-				alert("Invalid query. Try again.");
-			} else {
-				renderTable("Course Averages in Department", data.result)
-			}
-		})
-		.catch((error) => {
-			console.log("ERROR: ", error);
-			alert("invalid query. try again.");
-		})
+
 }
