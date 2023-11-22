@@ -89,4 +89,33 @@ describe("InsightFacade", function () {
 		});
 
 	});
+
+	describe("Add/Remove/List Dataset ROOMS", function () {
+		beforeEach(function () {
+			clearDisk();
+			facade = new InsightFacade();
+		});
+
+		it("Test zip file", async function () {
+			const result = await facade.addDataset("ubc", sections, InsightDatasetKind.Sections);
+			console.log(await facade.listDatasets());
+			const result2 = await facade.changeData("ubc", "1", "1", "1", "1", "1", 1, 1, 1, 1, 1);
+			console.log(await facade.listDatasets());
+
+		});
+
+
+		it("Test List file", async function () {
+			try {
+				const result = await facade.addDataset("MACE", section2, InsightDatasetKind.Rooms);
+
+				const datasets = await facade.listDatasets();
+
+
+			}  catch (err){
+				expect.fail("should not have rejected!");
+			}
+		});
+
+	});
 });
