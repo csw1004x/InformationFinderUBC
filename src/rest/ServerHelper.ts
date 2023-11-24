@@ -32,6 +32,9 @@ export async function putDataset(req: Request<any>, res: Response): Promise<void
 		.then((arr: string[]) => {
 			res.status(200).json({result: arr});
 		})
+		.catch((err: InsightError) => {
+			res.status(400).json({error: err.message});
+		})
 		.catch((err: Error) => {
 			res.status(400).json({error: err.message});
 		});
@@ -50,7 +53,7 @@ export async function deleteDataset(req: Request<any>, res: Response): Promise<v
 			res.status(404).json({error: err.message});
 		})
 		.catch((err: Error) => {
-			res.status(408).json({error: err.message});
+			res.status(400).json({error: err.message});
 		});
 }
 
@@ -62,6 +65,9 @@ export async function queryDataset(req: Request<any>, res: Response): Promise<vo
 	facade.performQuery(query)
 		.then((arr: InsightResult[]) => {
 			res.status(200).json({result: arr});
+		})
+		.catch((err: InsightError) => {
+			res.status(400).json({error: err.message});
 		})
 		.catch((err: Error) => {
 			res.status(400).json({error: err.message});
